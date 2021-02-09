@@ -18,6 +18,9 @@
 #include "EnemyShotTrigger.h"
 #include "HorizontalScroll.h"
 #include "IceBlock.h"
+#include "Damage.h"
+#include "PlayerHealth.h"
+
 
 
 

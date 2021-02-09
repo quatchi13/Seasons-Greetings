@@ -2,6 +2,7 @@
 #include "PhysicsPlaygroundListener.h"
 #include "Utilities.h"
 #include "Vector.h"
+#include "PlayerHealth.h"
 #include <vector>
 #include <random>
 
@@ -69,6 +70,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<CanJump>(entity);
 		ECS::AttachComponent<PlayerAim>(entity);
 		ECS::AttachComponent<IceBlock>(entity);
+		ECS::AttachComponent<PlayerHealth>(entity);
 
 		//Sets up the components
 		//ECS::AttachComponent<Player>(entity);
@@ -130,6 +132,12 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		for (int i = 3; i > -4; i--) {
 			for (int j = 4; j > -5; j--) {
 				
+				int enemy;
+				if (a == 14)
+				{
+					enemy = makeEnemy();
+					ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(pos.x + (j * 10), pos.y + (i * 10)));
+				}
 				if (floor[a] == 0) {
 					block = walls[wCount];
 					wCount++;
@@ -211,6 +219,14 @@ void PhysicsPlayground::Update()
 			}
 		}
 
+	}
+
+	auto& phealth = ECS::GetComponent<PlayerHealth>(MainEntities::MainPlayer());
+	if (phealth.hasBeenDamaged)
+	{
+		phealth.health--;
+		phealth.hasBeenDamaged = false;
+		phealth.CheckPlayerStatus();
 	}
 
 }
@@ -403,6 +419,39 @@ void PhysicsPlayground::makeWall(int index)
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3)); 
 
+}
+
+int PhysicsPlayground::makeEnemy()
+{
+	
+	std::string filename = "wall.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	int reference = entity;
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Damage>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 10, 10);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(0), float32(35));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+	return reference;
 }
 
 void PhysicsPlayground::makeGround(int index)

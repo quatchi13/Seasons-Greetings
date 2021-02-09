@@ -144,6 +144,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CanJump.h" />
+    <ClInclude Include="Damage.h" />
     <ClInclude Include="DestroyTrigger.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EffectManager.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="PixelateEffect.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAim.h" />
+    <ClInclude Include="PlayerHealth.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="Scene.h" />
@@ -207,6 +209,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CanJump.cpp" />
+    <ClCompile Include="Damage.cpp" />
     <ClCompile Include="DestroyTrigger.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EffectManager.cpp" />
@@ -233,6 +236,7 @@
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PixelateEffect.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerHealth.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="Scene.cpp" />

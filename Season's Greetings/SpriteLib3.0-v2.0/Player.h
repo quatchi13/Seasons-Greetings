@@ -74,6 +74,8 @@ public:
 	void MovementUpdate();
 	void AnimationUpdate();
 
+
+
 private:
 	void SetActiveAnimation(int anim);
 
@@ -99,6 +101,8 @@ private:
 
 	//Default animation direction (feel free to change this to suit your game. If you're making a side-scroller, left or right would be better
 	AnimDir m_facing = LEFT;
+
+	
 };
 
 #endif // !__PLAYER_H__

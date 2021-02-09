@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Damage.h"
 
 Player::Player()
 {
@@ -87,6 +88,8 @@ void Player::Update()
 	}
 
 	AnimationUpdate();
+
+	
 }
 
 void Player::MovementUpdate()
@@ -213,6 +216,8 @@ void Player::AnimationUpdate()
 
 	SetActiveAnimation(activeAnimation + (int)m_facing);
 }
+
+
 
 void Player::SetActiveAnimation(int anim)
 {

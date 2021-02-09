@@ -1,6 +1,7 @@
 #include "PhysicsPlaygroundListener.h"
 #include "ECS.h"
 
+
 PhysicsPlaygroundListener::PhysicsPlaygroundListener()
 	: b2ContactListener()
 {
@@ -60,6 +61,33 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		{
 			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_ready = true;
 			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_notInUse = true;
+		}
+	}
+
+	if ((filterA.categoryBits == ENEMY && filterB.categoryBits == PLAYER) || (filterB.categoryBits == ENEMY && filterA.categoryBits == PLAYER))
+	{
+		if (filterA.categoryBits == ENEMY)
+		{
+			if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
+				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+			}
+			else
+			{
+				ECS::GetComponent<PlayerHealth>((int)fixtureB->GetBody()->GetUserData()).hasBeenDamaged = true;
+			}
+		}
+		else if (filterB.categoryBits == ENEMY)
+		{
+			if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
+				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+			}
+			else
+			{
+				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
+			}
+			
+
+			
 		}
 	}
 

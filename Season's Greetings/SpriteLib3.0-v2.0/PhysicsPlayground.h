@@ -26,7 +26,7 @@ public:
 
 	void makeShotTrigger(int index);
 
-	void makeEnemy(int index);
+	int makeEnemy();
 
 	void makeBullet(int index);
 
