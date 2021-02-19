@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -146,6 +146,7 @@
     <ClInclude Include="CanJump.h" />
     <ClInclude Include="Damage.h" />
     <ClInclude Include="DestroyTrigger.h" />
+    <ClInclude Include="Door.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EnemyShotTrigger.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GrainEffect.h" />
     <ClInclude Include="GreyscaleEffect.h" />
+    <ClInclude Include="EnemyBase.h" />
     <ClInclude Include="HorizontalScroll.h" />
     <ClInclude Include="IceBlock.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -213,6 +215,7 @@
     <ClCompile Include="DestroyTrigger.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="EffectManager.cpp" />
+    <ClCompile Include="EnemyBase.cpp" />
     <ClCompile Include="EnemyShotTrigger.cpp" />
     <ClCompile Include="FirstCreation.cpp" />
     <ClCompile Include="Framebuffer.cpp" />

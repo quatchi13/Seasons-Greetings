@@ -2,9 +2,9 @@
 class IsInactive
 {
 public:
-	bool m_notInUse = false;
+	bool m_notInUse = true;
 	bool m_despawned = false;
-	bool m_ready = false;
+	bool hit = false;
 private:
 
 };

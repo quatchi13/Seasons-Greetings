@@ -39,12 +39,12 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		if (filterA.categoryBits == ENEMY)
 		{
 			//ECS::DestroyEntity((int)fixtureA->GetBody()->GetUserData());
-			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_ready = true;
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).ded = true;
 			ECS::GetComponent<Melee>((int)fixtureB->GetBody()->GetUserData()).m_hasHit = true;
 		}
 		else if (filterB.categoryBits == ENEMY)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_ready = true;
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).ded = true;
 			ECS::GetComponent<Melee>((int)fixtureA->GetBody()->GetUserData()).m_hasHit = true;
 		}
 	}
@@ -54,12 +54,12 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		if (filterA.categoryBits == ENEMY)
 		{
 			//ECS::DestroyEntity((int)fixtureA->GetBody()->GetUserData());
-			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_ready = true;
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).ded = true;
 			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_notInUse = true;
 		}
 		else if (filterB.categoryBits == ENEMY)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_ready = true;
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).ded = true;
 			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_notInUse = true;
 		}
 	}
@@ -68,6 +68,9 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 	{
 		if (filterA.categoryBits == ENEMY)
 		{
+
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).collided = true;
+
 			if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
 				std::cout << "PARRIED, YOU FUCKING CASUAL!";
 			}
@@ -78,6 +81,9 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 		else if (filterB.categoryBits == ENEMY)
 		{
+
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).collided = true;
+
 			if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
 				std::cout << "PARRIED, YOU FUCKING CASUAL!";
 			}
@@ -86,8 +92,33 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
 			}
 			
+		}
+	}
 
-			
+
+	if ((filterA.categoryBits == ENEMY && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == ENEMY && filterA.categoryBits == ENVIRONMENT))
+	{
+		if (filterA.categoryBits == ENEMY)
+		{
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).collided = true;
+		}
+		else if (filterB.categoryBits == ENEMY)
+		{
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).collided = true;
+		}
+	}
+
+
+	if ((filterA.categoryBits == DOOR && filterB.categoryBits == PLAYER) || (filterB.categoryBits == DOOR && filterA.categoryBits == PLAYER))
+	{
+		if (filterA.categoryBits == DOOR)
+		{
+			ECS::GetComponent<Door>((int)fixtureA->GetBody()->GetUserData()).activated = true;
+		}
+		else if (filterB.categoryBits == DOOR)
+		{
+			ECS::GetComponent<Door>((int)fixtureB->GetBody()->GetUserData()).activated = true;
+		
 		}
 	}
 
@@ -104,7 +135,7 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}*/
 
-	/*if ((filterA.categoryBits == BULLET && filterB.categoryBits == FBOUNDARY) || (filterB.categoryBits == BULLET && filterA.categoryBits == FBOUNDARY))
+	if ((filterA.categoryBits == BULLET && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == BULLET && filterA.categoryBits == ENVIRONMENT))
 	{
 		if (filterA.categoryBits == BULLET)
 		{
@@ -117,40 +148,40 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}
 
-	if ((filterA.categoryBits == EBULLET && filterB.categoryBits == BOUNDARY) || (filterB.categoryBits == EBULLET && filterA.categoryBits == BOUNDARY))
+	if ((filterA.categoryBits == EBULLET && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == EBULLET && filterA.categoryBits == ENVIRONMENT))
 	{
 		if (filterA.categoryBits == EBULLET)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_despawned = true;
+			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).hit = true;
 
 		}
 		else if (filterB.categoryBits == EBULLET)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_despawned = true;
+			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).hit = true;
 
 		}
-	}*/
+	}
 
 	if ((filterA.categoryBits == EBULLET && filterB.categoryBits == PLAYER) || (filterB.categoryBits == EBULLET && filterA.categoryBits == PLAYER))
 	{
 		if (filterA.categoryBits == EBULLET)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).m_despawned = true;
+			ECS::GetComponent<IsInactive>((int)fixtureA->GetBody()->GetUserData()).hit = true;
 			if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive)  {
 				std::cout << "PARRIED, YOU FUCKING CASUAL!";
 			}
 			else {
-				std::cout << "oof";
+				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
 			}
 		}
 		else if (filterB.categoryBits == EBULLET)
 		{
-			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).m_despawned = true;
+			ECS::GetComponent<IsInactive>((int)fixtureB->GetBody()->GetUserData()).hit = true;
 			if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
 				std::cout << "PARRIED, YOU FUCKING CASUAL!";
 			}
 			else {
-				std::cout << "oof";
+				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
 			}
 		}
 	}

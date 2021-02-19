@@ -5,6 +5,7 @@
 #include "PlayerHealth.h"
 #include <vector>
 #include <random>
+#include <time.h>
 
 
 PhysicsPlayground::PhysicsPlayground()
@@ -42,7 +43,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		//Creates new orthographic camera
 		ECS::AttachComponent<Camera>(entity);
 		ECS::AttachComponent<HorizontalScroll>(entity);
-		//ECS::AttachComponent<VerticalScroll>(entity);
+		ECS::AttachComponent<VerticalScroll>(entity);
 
 		vec4 temp = vec4(-75.f, 75.f, -75.f, 75.f);
 		ECS::GetComponent<Camera>(entity).SetOrthoSize(temp);
@@ -53,7 +54,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		//Attaches the camera to vert and horiz scrolls
 		ECS::GetComponent<HorizontalScroll>(entity).SetCam(&ECS::GetComponent<Camera>(entity));
-		//ECS::GetComponent<VerticalScroll>(entity).SetCam(&ECS::GetComponent<Camera>(entity));
+		ECS::GetComponent<VerticalScroll>(entity).SetCam(&ECS::GetComponent<Camera>(entity));
 	}
 
 	//player entity
@@ -81,15 +82,15 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		/*std::string animations = "Playerpain.json";*/
 		/*ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 25, 25, &ECS::GetComponent<Sprite>(entity),
 			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));*/
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 10, 10);
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 19.5, 19.5);
 		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 30.f, 2.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 30.f, 5.f));
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
 
-		float shrinkX = 0.f;
-		float shrinkY = 0.f;
+		float shrinkX = 0.5f;
+		float shrinkY = 0.5f;
 
 		b2Body* tempBody;
 		b2BodyDef tempDef;
@@ -98,17 +99,18 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(-2.f, 0.f), false, PLAYER, ENEMY | TRIGGER | EBULLET | ENVIRONMENT, 0.f, 3.f);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(-2.f, 0.f), false, PLAYER, ENEMY | TRIGGER | EBULLET | ENVIRONMENT | DOOR, 0.f, 3.f);
 		//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 		//std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(0, tempSpr.GetHeight() / 2.f) };
 		//tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.5);
 		tempPhsBody.SetRotationAngleDeg(0.f);
 		tempPhsBody.SetFixedRotation(true);
-		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+		tempPhsBody.SetColor(vec4(1.f, 0.f, 0.f, 0.3f));
 		tempPhsBody.SetGravityScale(40.f);
 	}
 
-
+	
+	makeImage("nothingness.png", 20, 20, 0, 0, 5, 1);
 
 	makeImage("Background.png", 25000, 150, 1, 12000, 40, -4);
 
@@ -117,63 +119,96 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 	std::cout << "beep";
-
-	for (int i = 0; i < 38; i++) {
-		makeGround(i);
-	}
+	makeSpike(0);
+	makeEnemy(0);
 	std::cout << "boop";
 
-	{
-		int a = 0;
-		int wCount = 0;
-		int gCount = 0;
-		b2Vec2 pos = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).GetBody()->GetPosition();
-		
-		for (int i = 3; i > -4; i--) {
-			for (int j = 4; j > -5; j--) {
-				
-				int enemy;
-				if (a == 14)
-				{
-					enemy = makeEnemy();
-					ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(pos.x + (j * 10), pos.y + (i * 10)));
+	std::vector<int>nums;
+	int newNum;
+	bool unsuccessful = true;
+	bool recurring = false;
+	int remaining = 7;
+	srand(time(0));
+
+	for (int i = 0; i < 7; i++) {
+		while (unsuccessful) {
+			newNum = rand() % 7;
+			if (i == 0) {
+				roomMap.push_back(mixedUp[newNum]);
+				nums.push_back(newNum);
+				unsuccessful = false;
+			}
+			else {
+				for (int j = 0; j < i; j++) {
+					if (nums[j] == newNum) {
+						recurring = true;
+					}
 				}
-				if (floor[a] == 0) {
-					block = walls[wCount];
-					wCount++;
+
+				if (!recurring) {
+					roomMap.push_back(mixedUp[newNum]);
+					nums.push_back(newNum);
+					unsuccessful = false;
 				}
 				else {
-					block = groundTiles[gCount];
-					gCount++;
+					recurring = false;
+					unsuccessful = true;
 				}
 
-				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(pos.x + (j * 10), pos.y + (i * 10)));
+			}
 
-				a++;
-				std::cout << a << '\n';
-				std::cout << (ECS::GetComponent<PhysicsBody>(block).GetBody()->GetPosition().x) << ' '
-					<< (ECS::GetComponent<PhysicsBody>(block).GetBody()->GetPosition().x) << '\n';
+		}
+		unsuccessful = true;
+	}
+
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 6; j++) {
+			if (floorMap[i][j] != 0) {
+				int r = floorMap[i][j] - 1;
+
+				if (floorMap[i-1][j] != 0) {
+					roomMap[r][4] = 1;
+				}
+				
+				if (floorMap[i + 1][j] != 0) {
+					roomMap[r][58] = 1;
+				}
+
+				if (floorMap[i][j- 1] != 0) {
+					roomMap[r][27] = 1;
+				}
+
+				if (floorMap[i][j + 1] != 0) {
+					roomMap[r][35] = 1;
+				}
 			}
 		}
 	}
 	
+	newRoom(roomNum, 4);
 
 	
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		auto entity = ECS::CreateEntity();
 		bulletHold.push_back(entity);
 
 		makeBullet(i + 1);
-	}
 
+		makeDoor(i);
+	}
+	
+	makeHostileBullet();
+	
 	makeSword();
 
-	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
-	//ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
-}
+	//makeShotTrigger(0);
 
+	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
+	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
+}
+PhysicsPlaygroundListener timer;
 void PhysicsPlayground::Update()
 {
 	//animations
@@ -181,7 +216,45 @@ void PhysicsPlayground::Update()
 	/*auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
 	pain.Update();*/
 
+	for (int i = 0; i < hostileBullets.size(); i++) {
+		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {
+			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetVelocity(vec3(0.f, 0.f, 0.f));
+			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetPosition(b2Vec2(500, 520));
+			ECS::GetComponent<IsInactive>(hostileBullets[i]).hit = false;
+			ECS::GetComponent<IsInactive>(hostileBullets[i]).m_notInUse = true;
+			std::cout << "beep";
+		}
+	}
 
+	for (int i = 0; i < enemies.size(); i++) {
+		if (ECS::GetComponent<Enemy>(enemies[i]).collided) {
+			ECS::GetComponent<Enemy>(enemies[i]).changeDirection();
+			ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[i]).eVelo));
+			ECS::GetComponent<Enemy>(enemies[i]).collided = false;
+		}
+	}
+
+	if (spikes.size()) {
+		//std::cout << "a";
+		for (int i = 0; i < spikes.size(); i++) {
+			if (timer.GetTimer() < 1.5) {
+				timer.AddTime(Timer::deltaTime);
+			}
+			else {
+				if (!ECS::GetComponent<Enemy>(spikes[i]).ded){
+					fireEnemyBullet(spikes[i], hostileBullets[0]);
+				}
+				timer.SetTimer(0);
+			}
+			
+
+
+			if (ECS::GetComponent<Enemy>(spikes[i]).ded && ECS::GetComponent<PhysicsBody>(spikes[i]).GetPosition().x != 500) {
+				std::cout << "oh no he ded \n";
+				ECS::GetComponent<PhysicsBody>(spikes[i]).SetPosition(b2Vec2(500, 500));
+			}
+		}
+	}
 
 	if (activeBullets.size() > 1) {
 		for (int i = 1; i < activeBullets.size(); i++) {
@@ -196,6 +269,9 @@ void PhysicsPlayground::Update()
 		}
 	}
 
+
+	
+
 	//melee attack
 	auto& swordBody = ECS::GetComponent<PhysicsBody>(melee);
 	auto& swordStuff = ECS::GetComponent<Melee>(melee);
@@ -206,6 +282,7 @@ void PhysicsPlayground::Update()
 			swordStuff.m_curDeg = 0;
 			swordBody.SetVelocity(vec3(0, 0, 0));
 			swordBody.SetPosition(b2Vec2(100, 300));
+			swordBody.SetRotationAngleDeg(0);
 		}
 		else {
 			swordBody.SetRotationAngleDeg(swordBody.GetRotationAngleDeg() - 9);
@@ -227,11 +304,26 @@ void PhysicsPlayground::Update()
 		phealth.health--;
 		phealth.hasBeenDamaged = false;
 		phealth.CheckPlayerStatus();
+		
 	}
+
+	for (int i = 0; i < 4; i++) {
+		if (ECS::GetComponent<Door>(doors[i]).activated) {
+			ECS::GetComponent<Door>(doors[i]).activated = false;
+			posOnMap[0] += ECS::GetComponent<Door>(doors[i]).yOffSet;
+			posOnMap[1] += ECS::GetComponent<Door>(doors[i]).xOffSet;
+			
+			roomNum = floorMap[posOnMap[0]][posOnMap[1]];
+			roomNum--;
+			std::cout << roomNum;
+			newRoom(roomNum, i);
+		}
+	}
+
 
 }
 
-PhysicsPlaygroundListener timer;
+
 void PhysicsPlayground::KeyboardHold()
 {
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
@@ -359,6 +451,10 @@ void PhysicsPlayground::KeyboardDown()
 		PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
 	}
 
+	if (Input::GetKeyDown(Key::F))
+	{
+		std::cout << player.GetBody()->GetPosition().x << " " << player.GetBody()->GetPosition().y << "\n";
+	}
 
 }
 
@@ -380,6 +476,9 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 	if (filename == "End.png") {
 		endCard = entity;
 	}
+	else if (filename == "nothingness.png") {
+		camFocus = entity;
+	}
 	//Add components
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
@@ -396,13 +495,14 @@ void PhysicsPlayground::makeWall(int index)
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	walls.push_back(entity);
+	allTiles.push_back(entity);
 
 	//attaches components to wall entity
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 10, 10);
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
 
 	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
@@ -421,53 +521,24 @@ void PhysicsPlayground::makeWall(int index)
 
 }
 
-int PhysicsPlayground::makeEnemy()
+void PhysicsPlayground::makeSpike(int index)
 {
 	
 	std::string filename = "wall.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
-	int reference = entity;
+	spikes.push_back(entity);
+	allTiles.push_back(entity);
 
 	//attaches components to wall entity
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 	ECS::AttachComponent<Damage>(entity);
+	ECS::AttachComponent<Enemy>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 10, 10);
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_staticBody;
-	tempDef.position.Set(float32(0), float32(35));
-
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
-	return reference;
-}
-
-void PhysicsPlayground::makeGround(int index)
-{
-	std::string filename = "ground.png";
-	//stores wall entity in vector
-	auto entity = ECS::CreateEntity();
-	groundTiles.push_back(entity);
-
-	//attaches components to wall entity
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 10, 10);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 1));
 
 	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -480,54 +551,111 @@ void PhysicsPlayground::makeGround(int index)
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
+void PhysicsPlayground::makeEnemy(int index)
+{
+
+	std::string filename = "LinkStandby.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	enemies.push_back(entity);
+	allTiles.push_back(entity);
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Damage>(entity);
+	ECS::AttachComponent<Enemy>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	ECS::GetComponent<Enemy>(entity).setVel(-50, 1, 0);
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(float32(500), float32(500));
+	tempDef.fixedRotation = true;
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 1000);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
+void PhysicsPlayground::makeGround()
+{
+	std::string filename = "ground.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	groundTile = entity;
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 180, 120);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 1));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(0), float32(20));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, BOUNDARY);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 
 }
 
-//void PhysicsPlayground::makeShotTrigger(int index)
-//{
-//	//Creates entity
-//	auto entity = ECS::CreateEntity();
-//
-//	shotTriggers.push_back(entity);
-//
-//	if (index == 0) {
-//		shotTriggers.erase(shotTriggers.begin());
-//	}
-//
-//
-//	//Add components
-//	ECS::AttachComponent<Sprite>(entity);
-//	ECS::AttachComponent<Transform>(entity);
-//	ECS::AttachComponent<PhysicsBody>(entity);
-//	ECS::AttachComponent<Trigger*>(entity);
-//
-//	//Sets up components
-//	//space
-//	std::string fileName = "nothingness.png";
-//	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 1, 200);
-//	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -20, 80));
-//	ECS::GetComponent<Trigger*>(entity) = new EnemyShotTrigger();
-//	ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(MainEntities::MainPlayer());
-//	ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(hostileBullets[index]);
-//
-//	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-//	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-//
-//
-//	b2Body* tempBody;
-//	b2BodyDef tempDef;
-//	tempDef.type = b2_staticBody;
-//	tempDef.position.Set(float32(positionArray[index][0] - 120), float32(-30));
-//
-//	tempBody = m_physicsWorld->CreateBody(&tempDef);
-//
-//	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()), float(tempSpr.GetHeight()), vec2(0.f, 0.f), true, TRIGGER, PLAYER);
-//	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
-//}
+void PhysicsPlayground::makeHostileBullet() {
+	std::string fileName = "EBullet.png";
+
+	auto entity = ECS::CreateEntity();
+	hostileBullets.push_back(entity);
 
 
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<IsInactive>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 5, 5);
+	ECS::GetComponent<Transform>(entity).SetPosition(100, 50, 10);
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+
+	tempSpr.SetTransparency(1.f);
+
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(500, 520);
+	tempDef.fixedRotation = true;
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth()) / 2.f), vec2(0.f, 0.f), false, EBULLET, PLAYER | ENVIRONMENT);
+	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
+	tempPhsBody.SetRotationAngleDeg(0);
+	tempPhsBody.SetGravityScale(0.f);
+
+}
 
 void PhysicsPlayground::makeBullet(int index) {
 
@@ -555,7 +683,7 @@ void PhysicsPlayground::makeBullet(int index) {
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY | FBOUNDARY);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY);
 	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
 	tempPhsBody.SetRotationAngleDeg(0);
 	tempPhsBody.SetFixedRotation(true);
@@ -589,7 +717,7 @@ void PhysicsPlayground::makeSword() {
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY);
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY, 0, 1500);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 	tempPhsBody.SetGravityScale(0);
 }
@@ -704,3 +832,153 @@ void PhysicsPlayground::slash() {
 	}
 
 }
+
+void PhysicsPlayground::newRoom(int room, int dTel) {
+	int a = 0;
+	int wCount = 0;
+	int sCount = 0;
+	int enemy;
+
+	for (int i = 0; i < enemies.size(); i++) {
+		ECS::GetComponent<PhysicsBody>(enemies[i]).SetVelocity(vec3(0, 0, 0));
+	}
+
+	for (int i = 0; i < 50; i++) {
+		ECS::GetComponent<PhysicsBody>(allTiles[i]).SetPosition(b2Vec2(500, 500));
+	}
+
+	std::cout << "printing room " << floorMap[posOnMap[0]][posOnMap[1]] << '\n';
+	for (int i = 3; i > -4; i--) {
+		for (int j = -4; j < 5; j++) {
+
+			int enemy;
+			if (a == 13)
+			{
+				enemy = spikes[sCount];
+				ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+			}
+
+			if (a == 33) {
+				ECS::GetComponent<PhysicsBody>(enemies[0]).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+
+			}
+
+			if (roomMap[room][a] == 0) {
+				block = walls[wCount];
+				wCount++;
+				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+			}
+
+			a++;
+			//std::cout << a << '\n';
+		}
+	}
+
+	switch (dTel) {
+	case 0:
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(80, 10));
+		break;
+	case 1:
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(-80, 10));
+		break;
+	case 2:
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, 70));
+		break;
+	case 3:
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, -46));
+		break;
+	default:
+		std::cout << "";
+	}
+
+	ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[0]).eVelo));
+}
+
+void PhysicsPlayground::makeDoor(int index) {
+	auto entity = ECS::CreateEntity();
+	int x, y, xOff, yOff;
+	std::string filename = "wall.png";
+
+	switch (index) {
+	case 0:
+		x = -110;
+		y = 10; 
+		xOff = -1;
+		yOff = 0;
+		break;
+	case 1:
+		x = 110;
+		y = 10;
+		xOff = 1;
+		yOff = 0;
+		break;
+	case 2:
+		x = 0;
+		y = -76;
+		xOff = 0;
+		yOff = 1;
+		break;
+	default:
+		x = 0;
+		y = 100;
+		xOff = 0;
+		yOff = -1;
+	}
+
+	doors.push_back(entity);
+		
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Door>(entity);
+	
+	ECS::GetComponent<Door>(entity).yOffSet = yOff; 
+	ECS::GetComponent<Door>(entity).xOffSet = xOff;
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(x), float32(y));
+	
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, DOOR, PLAYER | PWEAPON | BULLET);
+		tempPhsBody.SetColor(vec4(0, 0, 1, 0.3));
+	
+}
+
+void PhysicsPlayground::fireEnemyBullet(int shooter, int eBullet) {
+	
+	ECS::GetComponent<IsInactive>(eBullet).m_notInUse = false;
+
+	auto& enBul = ECS::GetComponent<PhysicsBody>(eBullet);
+
+	enBul.SetPosition(b2Vec2(ECS::GetComponent<PhysicsBody>(shooter).GetBody()->GetPosition().x, 
+		ECS::GetComponent<PhysicsBody>(shooter).GetBody()->GetPosition().y));
+
+	enBul.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+	//shoot bullet
+
+	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
+
+	vec3 source((enBul.GetBody()->GetPosition().x), (enBul.GetBody()->GetPosition().y), 3);
+	vec3 target((player.GetBody()->GetPosition().x), (player.GetBody()->GetPosition().y), 3);
+
+	b2Vec2 shotVec(target.x - source.x, target.y - source.y);
+	b2Vec2 unitVec = shotVec;
+	double normal = sqrt(pow(shotVec.x, 2) + pow(shotVec.y, 2));
+	unitVec.x /= normal;
+	unitVec.y /= normal;
+
+	vec3 velocity(unitVec.x * 75, unitVec.y * 75, 0);
+
+	enBul.SetVelocity(velocity);
+}
+

@@ -31,7 +31,8 @@ enum EntityCategories
 	BULLET = 0x0200,
 	PWEAPON = 0x0400,
 	EBULLET = 0x0800,
-	FBOUNDARY = 0x1000,
+	DOOR = 0x1000
+
 };
 
 

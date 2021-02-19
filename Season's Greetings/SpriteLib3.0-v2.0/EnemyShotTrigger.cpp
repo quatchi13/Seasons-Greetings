@@ -4,9 +4,11 @@
 void EnemyShotTrigger::OnEnter()
 {
 	Trigger::OnEnter();
+	
 
 	for (int i = 0; i < m_targetEntities.size(); i++)
 	{
+
 		//make bullet visible
 		auto& ebSpr = ECS::GetComponent<Sprite>(m_targetEntities[i]);
 
@@ -29,11 +31,14 @@ void EnemyShotTrigger::OnEnter()
 		unitVec.x /= normal;
 		unitVec.y /= normal;
 
-		vec3 velocity(unitVec.x * 150, unitVec.y * 150, 0);
+		vec3 velocity(unitVec.x * 75, unitVec.y * 75, 0);
 
 		enBul.SetVelocity(velocity);
 
+
 	}
+
+
 }
 
 void EnemyShotTrigger::OnExit()

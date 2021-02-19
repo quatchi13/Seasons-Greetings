@@ -22,13 +22,13 @@ public:
 	void makeImage(std::string filename, int width, int height, float opacity, float x, float y, float z);
 
 	void makeWall(int index);
-	void makeGround(int index);
+	void makeGround();
 
-	void makeShotTrigger(int index);
-
-	int makeEnemy();
+	void makeSpike(int index);
+	void makeEnemy(int index);
 
 	void makeBullet(int index);
+	void makeHostileBullet();
 
 	void makeSword();
 
@@ -36,10 +36,19 @@ public:
 
 	void fireBullet();
 
+	void newRoom(int, int);
+
+	void makeDoor(int);
+
+	void fireEnemyBullet(int, int);
+
+	void applyKnockBack();
+
 
 protected:
 	PhysicsPlaygroundListener listener;
 	int endCard;
+
 
 	bool hasStarted = false;
 	bool hasEnded = false;
@@ -48,37 +57,100 @@ protected:
 	int totalEnt = 117;
 	int tempBullet;
 
-	std::vector <int> enemies{ 0 };
+	std::vector <int> enemies;
+	std::vector<int> hostileBullets;
 	std::vector <int> activeBullets{ 0 };
 	std::vector <int> bulletHold{ 0 };
 	std::vector <int> shotTriggers{ 0 };
 	std::vector <int> walls;
-	std::vector <int> groundTiles;
+	std::vector<int> spikes;
+	std::vector<int>allTiles;
+	std::vector<int>doors;
 
+	int groundTile;
 	int block;
+	int camFocus;
 
-	int backBarrier;
-	int frontBarrier;
 	int melee;
 	int score = 0;
 
-	int positionArray[5][2]{
-		{440, 0},
-		{860, 20},
-		{1280, -30},
-		{1690, -30},
-		{2120, 70}
+	int floorMap[6][6]{
+		{0, 0, 0, 0, 0, 0},
+		{0, 1, 2, 3, 4, 0},
+		{0, 0, 5, 6, 0, 0},
+		{0, 0, 0, 7, 0, 0},
+		{0, 0, 0, 0, 0, 0}, 
+		{0, 0, 0, 0, 0, 0}
 	};
 
-	int floor[63]
+	std::vector<std::vector<int>>roomMap;
+
+	int roomNum = 6;
+	int posOnMap[2]{ 3, 3 };
+
+	std::vector<int>floor1
 	{0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 1, 1, 1, 1, 1, 1, 1, 0,
 	 0, 1, 1, 1, 1, 1, 1, 1, 0,
 	 0, 1, 1, 1, 1, 1, 1, 1, 0,
 	 0, 1, 1, 1, 1, 1, 1, 1, 0,
-	 0, 0, 1, 1, 1, 1, 1, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+	std::vector<int> floor2
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 1, 1, 1, 1, 1, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+	std::vector<int> floor3
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 1, 1, 1, 1, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	std::vector<int> floor4
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 1, 1, 1, 0, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	std::vector<int> floor5
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 1, 1, 0, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	std::vector<int> floor6
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 1, 0, 0, 0, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	std::vector<int> floor7
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 1, 0, 0, 0, 0,
+	 0, 0, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 1, 1, 1, 1, 1, 1, 1, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	std::vector<std::vector<int>> mixedUp{ floor1, floor2, floor3, floor4, floor5, floor6, floor7 };
 
 };

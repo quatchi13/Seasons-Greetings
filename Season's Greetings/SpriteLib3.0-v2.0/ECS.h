@@ -20,6 +20,8 @@
 #include "IceBlock.h"
 #include "Damage.h"
 #include "PlayerHealth.h"
+#include "EnemyBase.h"
+#include "Door.h"
 
 
 
