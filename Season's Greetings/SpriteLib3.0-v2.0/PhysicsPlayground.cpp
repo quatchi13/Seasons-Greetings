@@ -45,7 +45,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<HorizontalScroll>(entity);
 		ECS::AttachComponent<VerticalScroll>(entity);
 
-		vec4 temp = vec4(-75.f, 75.f, -75.f, 75.f);
+		vec4 temp = vec4(-65.f, 65.f, -65.f, 65.f);
 		ECS::GetComponent<Camera>(entity).SetOrthoSize(temp);
 		ECS::GetComponent<Camera>(entity).SetWindowSize(vec2(float(windowWidth), float(windowHeight)));
 		ECS::GetComponent<Camera>(entity).Orthographic(aspectRatio, temp.x, temp.y, temp.z, temp.w, -100.f, 100.f);
@@ -74,14 +74,14 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<PlayerHealth>(entity);
 
 		//Sets up the components
-		//ECS::AttachComponent<Player>(entity);
-		//ECS::AttachComponent<AnimationController>(entity);
+		ECS::AttachComponent<Player>(entity);
+		ECS::AttachComponent<AnimationController>(entity);
 
 		//Sets up the components
-		std::string fileName = "boxSprite.jpg";
-		/*std::string animations = "Playerpain.json";*/
-		/*ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 25, 25, &ECS::GetComponent<Sprite>(entity),
-			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));*/
+		std::string fileName = "spritesheets/Frost-Sheet.png";
+		std::string animations = "Frostbite.json";
+		ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 19.5, 19.5, &ECS::GetComponent<Sprite>(entity),
+			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 19.5, 19.5);
 		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 30.f, 5.f));
@@ -211,10 +211,18 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 PhysicsPlaygroundListener timer;
 void PhysicsPlayground::Update()
 {
+	if (needToAdd) {
+		attackFrames++;
+		if (attackFrames == 48) {
+			needToAdd = false;
+			attackFrames = 0;
+		}
+	}
+
 	//animations
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
-	/*auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
-	pain.Update();*/
+	auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
+	pain.Update();
 
 	for (int i = 0; i < hostileBullets.size(); i++) {
 		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {
@@ -374,64 +382,72 @@ void PhysicsPlayground::KeyboardHold()
 
 	player.SetVelocity(vec3(velX, velY, 0));
 }
-
+bool DoMeleeAnimation = true;
 void PhysicsPlayground::KeyboardDown()
 {
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 	auto& attacking = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
 
-	if (attacking.meleeAttackOn) {
-		if (Input::GetKeyDown(Key::UpArrow))
-		{
-			attacking.m_dirFacing = 'W';
-			slash();
+	if (needToAdd == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
+		if (attacking.meleeAttackOn) {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				attacking.m_dirFacing = 'W';
+				slash();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow)) {
 
-		}else if (Input::GetKeyDown(Key::LeftArrow)){
+				attacking.m_dirFacing = 'A';
+				slash();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::DownArrow)) {
 
-			attacking.m_dirFacing = 'A';
-			slash();
+				attacking.m_dirFacing = 'S';
+				slash();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::RightArrow)) {
 
-		}else if (Input::GetKeyDown(Key::DownArrow)){
-			
-			attacking.m_dirFacing = 'S';
-			slash();
-
-		}else if (Input::GetKeyDown(Key::RightArrow)){
-			
-			attacking.m_dirFacing = 'D';
-			slash();
-
-		}else if (Input::GetKeyDown(Key::Space)) {
-			attacking.meleeAttackOn = false;
+				attacking.m_dirFacing = 'D';
+				slash();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::Space)) {
+				attacking.meleeAttackOn = false;
+				DoMeleeAnimation = false;
+			}
 		}
-	}
-	else {
-		if (Input::GetKeyDown(Key::UpArrow))
-		{
-			attacking.m_dirFacing = 'W';
-			fireBullet();
+		else {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				attacking.m_dirFacing = 'W';
+				fireBullet();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow)) {
 
-		}
-		else if (Input::GetKeyDown(Key::LeftArrow)) {
+				attacking.m_dirFacing = 'A';
+				fireBullet();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::DownArrow)) {
 
-			attacking.m_dirFacing = 'A';
-			fireBullet();
+				attacking.m_dirFacing = 'S';
+				fireBullet();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::RightArrow)) {
 
-		}
-		else if (Input::GetKeyDown(Key::DownArrow)) {
-
-			attacking.m_dirFacing = 'S';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::RightArrow)) {
-
-			attacking.m_dirFacing = 'D';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::Space)) {
-			attacking.meleeAttackOn = true;
+				attacking.m_dirFacing = 'D';
+				fireBullet();
+				needToAdd = true;
+			}
+			else if (Input::GetKeyDown(Key::Space)) {
+				attacking.meleeAttackOn = true;
+				DoMeleeAnimation = true;
+			}
 		}
 	}
 
