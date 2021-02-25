@@ -38,50 +38,92 @@ void Player::InitPlayer(std::string& fileName, std::string& animationJSON, int w
 	//IDLE ANIMATIONS\\
 	
 	//Idle Left
-	m_animController->AddAnimation(animations["IdleLeft"].get<Animation>());
+	m_animController->AddAnimation(animations["LeftIdle"].get<Animation>());
 	//Idle Right
-	m_animController->AddAnimation(animations["IdleRight"].get<Animation>());
+	m_animController->AddAnimation(animations["RightIdle"].get<Animation>());
 #ifdef TOPDOWN
 	//Idle Up
-	m_animController->AddAnimation(animations["IdleUp"].get<Animation>());
+	m_animController->AddAnimation(animations["BackIdle"].get<Animation>());
 	//Idle Down
-	m_animController->AddAnimation(animations["IdleDown"].get<Animation>());
+	m_animController->AddAnimation(animations["FrontIdle"].get<Animation>());
 #endif
 
 	//Walk Animations\\
 
 	//WalkLeft
-	m_animController->AddAnimation(animations["WalkLeft"].get<Animation>());
+	m_animController->AddAnimation(animations["LeftIdle"].get<Animation>());
 	//WalkRight
-	m_animController->AddAnimation(animations["WalkRight"].get<Animation>());
+	m_animController->AddAnimation(animations["RightIdle"].get<Animation>());
 #ifdef TOPDOWN
 	//WalkUP
-	m_animController->AddAnimation(animations["WalkUp"].get<Animation>());
+	m_animController->AddAnimation(animations["BackIdle"].get<Animation>());
 	//WalkDown
-	m_animController->AddAnimation(animations["WalkDown"].get<Animation>());
+	m_animController->AddAnimation(animations["FrontIdle"].get<Animation>());
 #endif
 
 	//Attack Animations\\
 
 	//AttackLeft
-	m_animController->AddAnimation(animations["AttackLeft"].get<Animation>());
+	m_animController->AddAnimation(animations["LeftMeleeAttack"].get<Animation>());
 	//AttackRight
-	m_animController->AddAnimation(animations["AttackRight"].get<Animation>());
+	m_animController->AddAnimation(animations["RightMeleeAttack"].get<Animation>());
 #ifdef TOPDOWN
 	//AttackUp
-	m_animController->AddAnimation(animations["AttackUp"].get<Animation>());
+	m_animController->AddAnimation(animations["BackMeleeAttack"].get<Animation>());
 	//AttackDown
-	m_animController->AddAnimation(animations["AttackDown"].get<Animation>());
+	m_animController->AddAnimation(animations["FrontMeleeAttack"].get<Animation>());
 #endif
 
+	//Shooting anjsdnfksd
+	m_animController->AddAnimation(animations["LeftShooter"].get<Animation>());
+	//AttackRight
+	m_animController->AddAnimation(animations["RightShooter"].get<Animation>());
+#ifdef TOPDOWN
+	//AttackUp
+	m_animController->AddAnimation(animations["BackShooter"].get<Animation>());
+	//AttackDown
+	m_animController->AddAnimation(animations["FrontShooter"].get<Animation>());
+#endif
+
+	//BlockLeft
+	m_animController->AddAnimation(animations["LeftBlock"].get<Animation>());
+	//BlockRight
+	m_animController->AddAnimation(animations["RightBlock"].get<Animation>());
+#ifdef TOPDOWN
+	//BlockUp
+	m_animController->AddAnimation(animations["BackBlock"].get<Animation>());
+	//BlockDown
+	m_animController->AddAnimation(animations["FrontBlock"].get<Animation>());
+#endif
+
+	//DamageLeft
+	m_animController->AddAnimation(animations["LeftDamage"].get<Animation>());
+	//AttackRight
+	m_animController->AddAnimation(animations["RightDamage"].get<Animation>());
+#ifdef TOPDOWN
+	//AttackUp
+	m_animController->AddAnimation(animations["BackDamage"].get<Animation>());
+	//AttackDown
+	m_animController->AddAnimation(animations["FrontDamage"].get<Animation>());
+#endif
+
+
 	//Set Default Animation
-	m_animController->SetActiveAnim(IDLELEFT);
+	m_animController->SetActiveAnim(DOWN);
 
 
 }
 
 void Player::Update()
 {
+	if (needToAdd1) {
+		attackFrame++;
+		if (attackFrame == 48) {
+			needToAdd1 = false;
+			attackFrame = 0;
+		}
+	}
+
 	if (!m_locked)
 	{
 		MovementUpdate();
@@ -89,7 +131,6 @@ void Player::Update()
 
 	AnimationUpdate();
 
-	
 }
 
 void Player::MovementUpdate()
@@ -170,17 +211,113 @@ void Player::MovementUpdate()
 		}
 	}
 
-	if (Input::GetKeyDown(Key::Space))
-	{
+
+	//melee attacks
+	if (needToAdd1 == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
+		if (meleeAttack) {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				m_moving = false;
+
+				/*if (m_hasPhysics)
+				{
+					m_physBody->SetVelocity(vec3());
+				}*/
+				m_facing = UP;
+				m_attacking = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::DownArrow))
+			{
+				m_moving = false;
+				m_facing = DOWN;
+				m_attacking = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow))
+			{
+				m_moving = false;
+				m_facing = LEFT;
+				m_attacking = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::RightArrow))
+			{
+				m_moving = false;
+				m_facing = RIGHT;
+				m_attacking = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::Space)) {
+				meleeAttack = false;
+			}
+		}
+		else {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				m_moving = false;
+
+				/*if (m_hasPhysics)
+				{
+					m_physBody->SetVelocity(vec3());
+				}*/
+				m_facing = UP;
+				m_Shooting = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::DownArrow))
+			{
+				m_moving = false;
+				m_facing = DOWN;
+				m_Shooting = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow))
+			{
+				m_moving = false;
+				m_facing = LEFT;
+				m_Shooting = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::RightArrow))
+			{
+				m_moving = false;
+				m_facing = RIGHT;
+				m_Shooting = true;
+				m_locked = true;
+				needToAdd1 = true;
+			}
+			else if (Input::GetKeyDown(Key::Space)) {
+				meleeAttack = true;
+			}
+		}
+	}
+
+	//Blocking animations
+
+	if (Input::GetKey(Key::Shift)) {
 		m_moving = false;
 
-		if (m_hasPhysics)
-		{
-			m_physBody->SetVelocity(vec3());
-		}
-
-		m_attacking = true;
+		m_Block = true;
 		m_locked = true;
+	}
+
+	if (Input::GetKeyUp(Key::Shift))
+	{
+		//Will auto set to idle
+		m_locked = false;
+		m_Block = false;
+		//if (m_animController->GetAnimation(m_animController->GetActiveAnim()).GetAnimationDone()) {
+		//	//Resets the attack animation
+		m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
+		//}
 	}
 }
 
@@ -207,6 +344,35 @@ void Player::AnimationUpdate()
 			m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
 
 			activeAnimation = IDLE;
+		}
+	}
+	else if (m_Shooting)
+	{
+		activeAnimation = SHOOT;
+
+		//Check if the attack animation is done
+		if (m_animController->GetAnimation(m_animController->GetActiveAnim()).GetAnimationDone())
+		{
+			//Will auto set to idle
+			m_locked = false;
+			m_Shooting = false;
+			//Resets the attack animation
+			m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
+
+			activeAnimation = IDLE;
+		}
+	}
+	else if (m_Block) {
+		activeAnimation = BLOCK;
+		if (m_animController->GetAnimation(m_animController->GetActiveAnim()).GetAnimationDone())
+		{
+			//Will auto set to idle
+			m_locked = false;
+			m_Block = false;
+			//Resets the attack animation
+			//m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
+
+			//activeAnimation = IDLE;
 		}
 	}
 	else

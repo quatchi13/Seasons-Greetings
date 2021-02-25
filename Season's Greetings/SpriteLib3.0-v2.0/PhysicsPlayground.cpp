@@ -49,7 +49,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<HorizontalScroll>(entity);
 		ECS::AttachComponent<VerticalScroll>(entity);
 
-		vec4 temp = vec4(-75.f, 75.f, -75.f, 75.f);
+		vec4 temp = vec4(-65.f, 65.f, -65.f, 65.f);
 		ECS::GetComponent<Camera>(entity).SetOrthoSize(temp);
 		ECS::GetComponent<Camera>(entity).SetWindowSize(vec2(float(windowWidth), float(windowHeight)));
 		ECS::GetComponent<Camera>(entity).Orthographic(aspectRatio, temp.x, temp.y, temp.z, temp.w, -100.f, 100.f);
@@ -78,14 +78,14 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<PlayerHealth>(entity);
 
 		//Sets up the components
-		//ECS::AttachComponent<Player>(entity);
-		//ECS::AttachComponent<AnimationController>(entity);
+		ECS::AttachComponent<Player>(entity);
+		ECS::AttachComponent<AnimationController>(entity);
 
 		//Sets up the components
-		std::string fileName = "boxSprite.jpg";
-		/*std::string animations = "Playerpain.json";*/
-		/*ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 25, 25, &ECS::GetComponent<Sprite>(entity),
-			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));*/
+		std::string fileName = "spritesheets/Frost-Sheet.png";
+		std::string animations = "Frostbite.json";
+		ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 19.5, 19.5, &ECS::GetComponent<Sprite>(entity),
+			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 19.5, 19.5);
 		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 30.f, 5.f));
@@ -162,8 +162,8 @@ void PhysicsPlayground::Update()
 	}
 	//animations
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
-	/*auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
-	pain.Update();*/
+	auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
+	pain.Update();
 
 	/*for (int i = 0; i < hostileBullets.size(); i++) {
 		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {

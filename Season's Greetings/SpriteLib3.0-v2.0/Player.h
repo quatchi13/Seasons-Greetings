@@ -40,7 +40,11 @@ enum AnimTypes
 #ifdef TOPDOWN
 	IDLE = 0,
 	WALK = 4,
-	ATTACK = 8
+	ATTACK = 8,
+	SHOOT = 12,
+	BLOCK = 16,
+	DAMAGE = 20
+
 #endif
 #ifndef TOPDOWN
 	IDLE = 0,
@@ -79,10 +83,21 @@ public:
 private:
 	void SetActiveAnimation(int anim);
 
+	bool meleeAttack = true;
+
+	int attackFrame = 0;
+	bool needToAdd1 = false;
+
 	//Basically, any animation OTHER than moving will not have a cancel, and we'll be checking whether or not that animation is done
 	bool m_moving = false;
 	//Are you currently attacking?????
 	bool m_attacking = false;
+	//Shoot the hell outta the enemy 
+	bool m_Shooting = false;
+	//protect your self from da monsters rawr XD
+	bool m_Block = false;
+	//Heck you got hurt boo hoo :(
+	bool m_Damage = false;
 	//Have we locked the player from moving during this animation?
 	bool m_locked = false;
 
@@ -100,9 +115,9 @@ private:
 	bool m_hasPhysics = false;
 
 	//Default animation direction (feel free to change this to suit your game. If you're making a side-scroller, left or right would be better
-	AnimDir m_facing = LEFT;
+	AnimDir m_facing = DOWN;
 
 	
 };
 
-#endif // !__PLAYER_H__
+#endif // !__PLAYER_H_;_
