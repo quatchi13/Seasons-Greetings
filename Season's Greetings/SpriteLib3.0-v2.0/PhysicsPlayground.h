@@ -49,8 +49,6 @@ protected:
 	PhysicsPlaygroundListener listener;
 	int endCard;
 
-	int attackFrames = 0;
-	bool needToAdd = false;
 
 	bool hasStarted = false;
 	bool hasEnded = false;
