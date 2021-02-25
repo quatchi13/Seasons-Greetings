@@ -3,9 +3,11 @@
 #include "Utilities.h"
 #include "Vector.h"
 #include "PlayerHealth.h"
+#include "Dungeon.h";
 #include <vector>
 #include <random>
 #include <time.h>
+#include <fstream>
 
 
 PhysicsPlayground::PhysicsPlayground()
@@ -20,6 +22,8 @@ PhysicsPlayground::PhysicsPlayground(std::string name)
 
 	m_physicsWorld->SetContactListener(&listener);
 }
+
+Dungeon dungeon;
 
 void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 {
@@ -119,73 +123,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 	std::cout << "beep";
-	makeSpike(0);
-	makeEnemy(0);
-	std::cout << "boop";
-
-	std::vector<int>nums;
-	int newNum;
-	bool unsuccessful = true;
-	bool recurring = false;
-	int remaining = 7;
-	srand(time(0));
-
-	for (int i = 0; i < 7; i++) {
-		while (unsuccessful) {
-			newNum = rand() % 7;
-			if (i == 0) {
-				roomMap.push_back(mixedUp[newNum]);
-				nums.push_back(newNum);
-				unsuccessful = false;
-			}
-			else {
-				for (int j = 0; j < i; j++) {
-					if (nums[j] == newNum) {
-						recurring = true;
-					}
-				}
-
-				if (!recurring) {
-					roomMap.push_back(mixedUp[newNum]);
-					nums.push_back(newNum);
-					unsuccessful = false;
-				}
-				else {
-					recurring = false;
-					unsuccessful = true;
-				}
-
-			}
-
-		}
-		unsuccessful = true;
-	}
-
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 6; j++) {
-			if (floorMap[i][j] != 0) {
-				int r = floorMap[i][j] - 1;
-
-				if (floorMap[i-1][j] != 0) {
-					roomMap[r][4] = 1;
-				}
-				
-				if (floorMap[i + 1][j] != 0) {
-					roomMap[r][58] = 1;
-				}
-
-				if (floorMap[i][j- 1] != 0) {
-					roomMap[r][27] = 1;
-				}
-
-				if (floorMap[i][j + 1] != 0) {
-					roomMap[r][35] = 1;
-				}
-			}
-		}
+	for (int i = 0; i < 16; i++) {
+		makeSpike(i);
 	}
 	
-	newRoom(roomNum, 4);
+	//makeEnemy(0);
 
 	
 
@@ -203,7 +145,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	
 	makeSword();
 
-	//makeShotTrigger(0);
+	newRoom(4, 4);
 
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
@@ -211,12 +153,19 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 PhysicsPlaygroundListener timer;
 void PhysicsPlayground::Update()
 {
+	if (needToAdd) {
+		attackFrames++;
+		if (attackFrames == 48) {
+			needToAdd = false;
+			attackFrames = 0;
+		}
+	}
 	//animations
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 	/*auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
 	pain.Update();*/
 
-	for (int i = 0; i < hostileBullets.size(); i++) {
+	/*for (int i = 0; i < hostileBullets.size(); i++) {
 		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {
 			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetVelocity(vec3(0.f, 0.f, 0.f));
 			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetPosition(b2Vec2(500, 520));
@@ -224,7 +173,7 @@ void PhysicsPlayground::Update()
 			ECS::GetComponent<IsInactive>(hostileBullets[i]).m_notInUse = true;
 			std::cout << "beep";
 		}
-	}
+	}*/
 
 	for (int i = 0; i < enemies.size(); i++) {
 		if (ECS::GetComponent<Enemy>(enemies[i]).collided) {
@@ -234,27 +183,27 @@ void PhysicsPlayground::Update()
 		}
 	}
 
-	if (spikes.size()) {
-		//std::cout << "a";
-		for (int i = 0; i < spikes.size(); i++) {
-			if (timer.GetTimer() < 1.5) {
-				timer.AddTime(Timer::deltaTime);
-			}
-			else {
-				if (!ECS::GetComponent<Enemy>(spikes[i]).ded){
-					fireEnemyBullet(spikes[i], hostileBullets[0]);
-				}
-				timer.SetTimer(0);
-			}
-			
+	//if (spikes.size()) {
+	//	//std::cout << "a";
+	//	for (int i = 0; i < spikes.size(); i++) {
+	//		if (timer.GetTimer() < 1.5) {
+	//			timer.AddTime(Timer::deltaTime);
+	//		}
+	//		else {
+	//			if (!ECS::GetComponent<Enemy>(spikes[i]).ded){
+	//				fireEnemyBullet(spikes[i], hostileBullets[0]);
+	//			}
+	//			timer.SetTimer(0);
+	//		}
+	//		
 
 
-			if (ECS::GetComponent<Enemy>(spikes[i]).ded && ECS::GetComponent<PhysicsBody>(spikes[i]).GetPosition().x != 500) {
-				std::cout << "oh no he ded \n";
-				ECS::GetComponent<PhysicsBody>(spikes[i]).SetPosition(b2Vec2(500, 500));
-			}
-		}
-	}
+	//		if (ECS::GetComponent<Enemy>(spikes[i]).ded && ECS::GetComponent<PhysicsBody>(spikes[i]).GetPosition().x != 500) {
+	//			std::cout << "oh no he ded \n";
+	//			ECS::GetComponent<PhysicsBody>(spikes[i]).SetPosition(b2Vec2(500, 500));
+	//		}
+	//	}
+	//}
 
 	if (activeBullets.size() > 1) {
 		for (int i = 1; i < activeBullets.size(); i++) {
@@ -310,13 +259,13 @@ void PhysicsPlayground::Update()
 	for (int i = 0; i < 4; i++) {
 		if (ECS::GetComponent<Door>(doors[i]).activated) {
 			ECS::GetComponent<Door>(doors[i]).activated = false;
-			posOnMap[0] += ECS::GetComponent<Door>(doors[i]).yOffSet;
-			posOnMap[1] += ECS::GetComponent<Door>(doors[i]).xOffSet;
+			dungeon.position[0] += ECS::GetComponent<Door>(doors[i]).yOffSet;
+			dungeon.position[1] += ECS::GetComponent<Door>(doors[i]).xOffSet;
 			
-			roomNum = floorMap[posOnMap[0]][posOnMap[1]];
-			roomNum--;
-			std::cout << roomNum;
-			newRoom(roomNum, i);
+			dungeon.currentRoom = dungeon.map[dungeon.position[0]][dungeon.position[1]];
+			dungeon.currentRoom--;
+			std::cout << dungeon.currentRoom;
+			newRoom(dungeon.currentRoom, i);
 		}
 	}
 
@@ -379,62 +328,71 @@ void PhysicsPlayground::KeyboardDown()
 {
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 	auto& attacking = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
+	if (needToAdd == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
+		if (attacking.meleeAttackOn) {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				attacking.m_dirFacing = 'W';
+				slash();
+				needToAdd = true;
 
-	if (attacking.meleeAttackOn) {
-		if (Input::GetKeyDown(Key::UpArrow))
-		{
-			attacking.m_dirFacing = 'W';
-			slash();
+			}else if (Input::GetKeyDown(Key::LeftArrow)){
 
-		}else if (Input::GetKeyDown(Key::LeftArrow)){
+				attacking.m_dirFacing = 'A';
+				slash();
+				needToAdd = true;
 
-			attacking.m_dirFacing = 'A';
-			slash();
-
-		}else if (Input::GetKeyDown(Key::DownArrow)){
+			}else if (Input::GetKeyDown(Key::DownArrow)){
 			
-			attacking.m_dirFacing = 'S';
-			slash();
+				attacking.m_dirFacing = 'S';
+				slash();
+				needToAdd = true;
 
-		}else if (Input::GetKeyDown(Key::RightArrow)){
+			}else if (Input::GetKeyDown(Key::RightArrow)){
 			
-			attacking.m_dirFacing = 'D';
-			slash();
+				attacking.m_dirFacing = 'D';
+				slash();
+				needToAdd = true;
 
-		}else if (Input::GetKeyDown(Key::Space)) {
-			attacking.meleeAttackOn = false;
+			}else if (Input::GetKeyDown(Key::Space)) {
+				attacking.meleeAttackOn = false;
+			}
+		}
+		else {
+			if (Input::GetKeyDown(Key::UpArrow))
+			{
+				attacking.m_dirFacing = 'W';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow)) {
+
+				attacking.m_dirFacing = 'A';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::DownArrow)) {
+
+				attacking.m_dirFacing = 'S';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::RightArrow)) {
+
+				attacking.m_dirFacing = 'D';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::Space)) {
+				attacking.meleeAttackOn = true;
+			}
 		}
 	}
-	else {
-		if (Input::GetKeyDown(Key::UpArrow))
-		{
-			attacking.m_dirFacing = 'W';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::LeftArrow)) {
-
-			attacking.m_dirFacing = 'A';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::DownArrow)) {
-
-			attacking.m_dirFacing = 'S';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::RightArrow)) {
-
-			attacking.m_dirFacing = 'D';
-			fireBullet();
-
-		}
-		else if (Input::GetKeyDown(Key::Space)) {
-			attacking.meleeAttackOn = true;
-		}
-	}
-
+	
 
 	if (Input::GetKeyDown(Key::J))
 	{
@@ -450,7 +408,7 @@ void PhysicsPlayground::KeyboardDown()
 	{
 		PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
 	}
-
+	
 	if (Input::GetKeyDown(Key::F))
 	{
 		std::cout << player.GetBody()->GetPosition().x << " " << player.GetBody()->GetPosition().y << "\n";
@@ -843,34 +801,30 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 		ECS::GetComponent<PhysicsBody>(enemies[i]).SetVelocity(vec3(0, 0, 0));
 	}
 
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < allTiles.size(); i++) {
 		ECS::GetComponent<PhysicsBody>(allTiles[i]).SetPosition(b2Vec2(500, 500));
 	}
 
-	std::cout << "printing room " << floorMap[posOnMap[0]][posOnMap[1]] << '\n';
+	std::cout << "printing room " << dungeon.map[dungeon.position[0]][dungeon.position[1]] << '\n';
 	for (int i = 3; i > -4; i--) {
 		for (int j = -4; j < 5; j++) {
 
 			int enemy;
-			if (a == 13)
+			if (dungeon.rooms[room][a] == 2)
 			{
-				enemy = spikes[sCount];
-				ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+				block = spikes[sCount];
+				sCount++;
+				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 			}
 
-			if (a == 33) {
-				ECS::GetComponent<PhysicsBody>(enemies[0]).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 
-			}
-
-			if (roomMap[room][a] == 0) {
+			if (dungeon.rooms[room][a] == 0) {
 				block = walls[wCount];
 				wCount++;
 				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 			}
 
 			a++;
-			//std::cout << a << '\n';
 		}
 	}
 
@@ -891,7 +845,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 		std::cout << "";
 	}
 
-	ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[0]).eVelo));
+	//ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[0]).eVelo));
 }
 
 void PhysicsPlayground::makeDoor(int index) {

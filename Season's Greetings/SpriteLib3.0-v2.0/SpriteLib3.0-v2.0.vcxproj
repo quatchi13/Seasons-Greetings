@@ -147,6 +147,7 @@
     <ClInclude Include="Damage.h" />
     <ClInclude Include="DestroyTrigger.h" />
     <ClInclude Include="Door.h" />
+    <ClInclude Include="Dungeon.h" />
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EnemyShotTrigger.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="FirstCreation.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="GrainEffect.cpp" />
     <ClCompile Include="GreyscaleEffect.cpp" />
     <ClCompile Include="HorizontalScroll.cpp" />
