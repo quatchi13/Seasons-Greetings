@@ -4,6 +4,54 @@
 #include <vector>
 #include "Dungeon.h"
 
+//KILL AFTER REVIEW
+void Dungeon::tempPopulateDungeon() {
+	indexes.clear();
+	for (int i = 0; i < nOfRooms; i++) {
+		while (unsuccessful) {
+			randNum = rand() % 12;
+			if (i == 0) {
+				indexes.push_back(randNum);
+				unsuccessful = false;
+			}
+			else if (i == 4) {
+				indexes.push_back(0);
+				unsuccessful = false;
+			}
+			else {
+				for (int j = 0; j < i; j++) {
+					if (indexes[j] == randNum) {
+						recurring = true;
+					}
+				}
+				if (!recurring) {
+					indexes.push_back(randNum);
+					unsuccessful = false;
+				}
+				else {
+					recurring = false;
+					unsuccessful = true;
+				}
+			}
+
+		}
+		unsuccessful = true;
+	}
+
+	for (int i = 0; i < nOfRooms; i++) {
+		if (i == 4) {
+			currRoomEnemies.push_back(0);
+		}
+		else {
+			currRoomEnemies.push_back(1);
+			currRoomEnemies.push_back(indexes[i]);
+		}
+
+		enemiesInRooms.push_back(currRoomEnemies);
+		currRoomEnemies.clear();
+	}
+		
+}
 
 void Dungeon::setEnemyCount() {
 	remainingEnemies = 24 - ((8 - (nOfRooms - 1)) * 3);
@@ -220,4 +268,7 @@ Dungeon::Dungeon()
 	selectMap();
 	selectRooms();
 	getPosition();
+
+	//KILL AFTER REVIEW
+	tempPopulateDungeon();
 }

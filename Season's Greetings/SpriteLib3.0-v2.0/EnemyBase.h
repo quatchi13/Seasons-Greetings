@@ -7,6 +7,8 @@ public:
 	int health;
 	int damage;
 	int speed = 0;
+	bool shoots = false;
+	bool moves = false;
 	bool ded = false;
 	bool active = false;
 	bool collided = false;

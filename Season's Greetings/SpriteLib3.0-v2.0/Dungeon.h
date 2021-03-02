@@ -50,5 +50,8 @@ private:
 	void populateDungeon();
 	void populateRoom();
 	void setEnemyCount();
+
+	//KILL AFTER REVIEW
+	void tempPopulateDungeon();
 	
 };

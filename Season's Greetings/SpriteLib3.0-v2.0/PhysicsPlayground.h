@@ -25,6 +25,7 @@ public:
 	void makeGround();
 
 	void makeSpike(int index);
+	void makeShooter(int index);
 	void makeEnemy(int index);
 
 	void makeBullet(int index);
@@ -59,10 +60,10 @@ protected:
 	int tempBullet;
 
 	std::vector <int> enemies;
+	std::vector<int> activeEnemies;
 	std::vector<int> hostileBullets;
 	std::vector <int> activeBullets{ 0 };
 	std::vector <int> bulletHold{ 0 };
-	std::vector <int> shotTriggers{ 0 };
 	std::vector <int> walls;
 	std::vector<int> spikes;
 	std::vector<int>allTiles;

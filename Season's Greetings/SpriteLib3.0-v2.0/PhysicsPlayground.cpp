@@ -93,8 +93,8 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
 
-		float shrinkX = 0.5f;
-		float shrinkY = 0.5f;
+		float shrinkX = 3.5f;
+		float shrinkY = 3.5f;
 
 		b2Body* tempBody;
 		b2BodyDef tempDef;
@@ -115,8 +115,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	
 	makeImage("nothingness.png", 20, 20, 0, 0, 5, 1);
-
-	makeImage("Background.png", 25000, 150, 1, 12000, 40, -4);
+	makeGround();
 
 	for (int i = 0; i < 49; i++) {
 		makeWall(i);
@@ -127,7 +126,15 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeSpike(i);
 	}
 	
-	//makeEnemy(0);
+	for (int i = 0; i < 4; i++) {
+		makeShooter(i);
+		makeHostileBullet();
+	}
+
+	for (int i = 0; i < 8; i++) {
+		makeEnemy(i);
+	}
+	
 
 	
 
@@ -141,15 +148,18 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeDoor(i);
 	}
 	
-	makeHostileBullet();
+	
 	
 	makeSword();
 
 	newRoom(4, 4);
 
+	makeImage("blackbox.png", 300, 300, 1.f, 0, 10, 30);
+
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
 }
+
 PhysicsPlaygroundListener timer;
 void PhysicsPlayground::Update()
 {
@@ -165,7 +175,7 @@ void PhysicsPlayground::Update()
 	auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
 	pain.Update();
 
-	/*for (int i = 0; i < hostileBullets.size(); i++) {
+	for (int i = 0; i < hostileBullets.size(); i++) {
 		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {
 			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetVelocity(vec3(0.f, 0.f, 0.f));
 			ECS::GetComponent<PhysicsBody>(hostileBullets[i]).SetPosition(b2Vec2(500, 520));
@@ -173,37 +183,53 @@ void PhysicsPlayground::Update()
 			ECS::GetComponent<IsInactive>(hostileBullets[i]).m_notInUse = true;
 			std::cout << "beep";
 		}
-	}*/
+	}
 
-	for (int i = 0; i < enemies.size(); i++) {
-		if (ECS::GetComponent<Enemy>(enemies[i]).collided) {
-			ECS::GetComponent<Enemy>(enemies[i]).changeDirection();
-			ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[i]).eVelo));
-			ECS::GetComponent<Enemy>(enemies[i]).collided = false;
+	if (activeEnemies.size()) {
+			for (int i = 0; i < activeEnemies.size(); i++) {
+				if (ECS::GetComponent<Enemy>(activeEnemies[i]).ded && ECS::GetComponent<PhysicsBody>(activeEnemies[i]).GetPosition().x != 500) {
+					std::cout << "oh no he ded \n";
+					ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetPosition(b2Vec2(500, 500));
+					ECS::GetComponent<Enemy>(activeEnemies[i]).ded = false;
+					activeEnemies.erase(activeEnemies.begin() + i);
+
+					//REMOVE THIS AFTER REVIEW
+					dungeon.enemiesInRooms[dungeon.currentRoom][0] = 0;
+
+				}
+			}
+		}
+
+	if (activeEnemies.size()) {
+		for (int i = 0; i < activeEnemies.size(); i++) {
+			if (ECS::GetComponent<Enemy>(activeEnemies[i]).moves) {
+				if (ECS::GetComponent<Enemy>(activeEnemies[i]).collided) {
+					ECS::GetComponent<Enemy>(activeEnemies[i]).changeDirection();
+					ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[i]).eVelo));
+					ECS::GetComponent<Enemy>(activeEnemies[i]).collided = false;
+				}
+			}
+			
+		}
+	}
+	
+
+	if (activeEnemies.size()) {
+		timer.AddTime(Timer::deltaTime);
+		if (timer.GetTimer() > 1.5) {
+			int hBIndex = 0;
+			for (int i = 0; i < activeEnemies.size(); i++) {
+				if (ECS::GetComponent<Enemy>(activeEnemies[i]).shoots) {
+					fireEnemyBullet(activeEnemies[i], hostileBullets[hBIndex]);
+					hBIndex++;
+				}
+
+			}
+			timer.SetTimer(0);
 		}
 	}
 
-	//if (spikes.size()) {
-	//	//std::cout << "a";
-	//	for (int i = 0; i < spikes.size(); i++) {
-	//		if (timer.GetTimer() < 1.5) {
-	//			timer.AddTime(Timer::deltaTime);
-	//		}
-	//		else {
-	//			if (!ECS::GetComponent<Enemy>(spikes[i]).ded){
-	//				fireEnemyBullet(spikes[i], hostileBullets[0]);
-	//			}
-	//			timer.SetTimer(0);
-	//		}
-	//		
-
-
-	//		if (ECS::GetComponent<Enemy>(spikes[i]).ded && ECS::GetComponent<PhysicsBody>(spikes[i]).GetPosition().x != 500) {
-	//			std::cout << "oh no he ded \n";
-	//			ECS::GetComponent<PhysicsBody>(spikes[i]).SetPosition(b2Vec2(500, 500));
-	//		}
-	//	}
-	//}
+	
 
 	if (activeBullets.size() > 1) {
 		for (int i = 1; i < activeBullets.size(); i++) {
@@ -482,7 +508,7 @@ void PhysicsPlayground::makeWall(int index)
 void PhysicsPlayground::makeSpike(int index)
 {
 	
-	std::string filename = "wall.png";
+	std::string filename = "spikes1.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	spikes.push_back(entity);
@@ -513,10 +539,46 @@ void PhysicsPlayground::makeSpike(int index)
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
+void PhysicsPlayground::makeShooter(int index)
+{
+
+	std::string filename = "Bean_shooter.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	allTiles.push_back(entity);
+	enemies.push_back(entity);
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Damage>(entity);
+	ECS::AttachComponent<Enemy>(entity);
+
+	ECS::GetComponent<Enemy>(entity).shoots = true;
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(500), float32(500));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
 void PhysicsPlayground::makeEnemy(int index)
 {
 
-	std::string filename = "LinkStandby.png";
+	std::string filename = "Spectre1.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	enemies.push_back(entity);
@@ -529,9 +591,10 @@ void PhysicsPlayground::makeEnemy(int index)
 	ECS::AttachComponent<Damage>(entity);
 	ECS::AttachComponent<Enemy>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 19, 19);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
 
+	ECS::GetComponent<Enemy>(entity).moves = true;
 	ECS::GetComponent<Enemy>(entity).setVel(-50, 1, 0);
 
 	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
@@ -561,8 +624,8 @@ void PhysicsPlayground::makeGround()
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 180, 120);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 1));
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 180, 140);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, -4));
 
 	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -570,18 +633,18 @@ void PhysicsPlayground::makeGround()
 	b2Body* tempBody;
 	b2BodyDef tempDef;
 	tempDef.type = b2_staticBody;
-	tempDef.position.Set(float32(0), float32(20));
+	tempDef.position.Set(float32(0), float32(10));
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, BOUNDARY);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+	tempPhsBody.SetColor(vec4(0, 0, 0, 0.3));
 
 }
 
 void PhysicsPlayground::makeHostileBullet() {
-	std::string fileName = "EBullet.png";
+	std::string fileName = "bean.png";
 
 	auto entity = ECS::CreateEntity();
 	hostileBullets.push_back(entity);
@@ -617,7 +680,7 @@ void PhysicsPlayground::makeHostileBullet() {
 
 void PhysicsPlayground::makeBullet(int index) {
 
-	std::string fileName = "Bullet.png";
+	std::string fileName = "Snow4.png";
 	vec3 source(100, 300, 3);
 	auto entity = bulletHold[index];
 
@@ -660,7 +723,7 @@ void PhysicsPlayground::makeSword() {
 	ECS::AttachComponent<IsInactive>(entity);
 
 	//Sets up components
-	std::string fileName = "BoxSprite.jpg";
+	std::string fileName = "nothingness.png";
 	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 16, 2);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
 
@@ -806,6 +869,11 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 	}
 
 	std::cout << "printing room " << dungeon.map[dungeon.position[0]][dungeon.position[1]] << '\n';
+	
+	if (activeEnemies.size()) {
+		activeEnemies.clear();
+	}
+
 	for (int i = 3; i > -4; i--) {
 		for (int j = -4; j < 5; j++) {
 
@@ -822,6 +890,15 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 				block = walls[wCount];
 				wCount++;
 				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+			}
+
+			//modify, don't kill completely
+			if (a == 31) {
+				if (dungeon.enemiesInRooms[dungeon.currentRoom][0]) {
+					enemy = dungeon.enemiesInRooms[dungeon.currentRoom][1];
+					activeEnemies.push_back(enemies[enemy]);
+					ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+				}
 			}
 
 			a++;
@@ -845,13 +922,18 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 		std::cout << "";
 	}
 
-	//ECS::GetComponent<PhysicsBody>(enemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(enemies[0]).eVelo));
+
+	if (activeEnemies.size()) {
+		for (int i = 0; i < activeEnemies.size(); i++) {
+			ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[0]).eVelo));
+		}
+	}
 }
 
 void PhysicsPlayground::makeDoor(int index) {
 	auto entity = ECS::CreateEntity();
 	int x, y, xOff, yOff;
-	std::string filename = "wall.png";
+	std::string filename = "nothingness.png";
 
 	switch (index) {
 	case 0:
