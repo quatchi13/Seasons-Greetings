@@ -27,6 +27,8 @@ public:
 	void makeSpike(int index);
 	void makeShooter(int index);
 	void makeEnemy(int index);
+	void makeClockwiseEnemy(int index);
+	void makeChaser(int index);
 
 	void makeBullet(int index);
 	void makeHostileBullet();

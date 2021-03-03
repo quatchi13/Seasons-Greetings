@@ -48,10 +48,8 @@ private:
 	void setDoors();
 
 	void populateDungeon();
-	void populateRoom();
+	void populateRooms();
 	void setEnemyCount();
-
-	//KILL AFTER REVIEW
-	void tempPopulateDungeon();
+	void setPositions();
 	
 };

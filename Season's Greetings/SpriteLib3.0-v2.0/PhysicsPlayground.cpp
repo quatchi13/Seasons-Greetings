@@ -93,8 +93,8 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
 
-		float shrinkX = 3.5f;
-		float shrinkY = 3.5f;
+		float shrinkX = 9.5f;
+		float shrinkY = 8.5f;
 
 		b2Body* tempBody;
 		b2BodyDef tempDef;
@@ -103,7 +103,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(-2.f, 0.f), false, PLAYER, ENEMY | TRIGGER | EBULLET | ENVIRONMENT | DOOR, 0.f, 3.f);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, -4.f), false, PLAYER, ENEMY | TRIGGER | EBULLET | ENVIRONMENT | DOOR, 0.f, 3.f);
 		//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 		//std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(0, tempSpr.GetHeight() / 2.f) };
 		//tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.5);
@@ -115,7 +115,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	
 	makeImage("nothingness.png", 20, 20, 0, 0, 5, 1);
-	makeGround();
+	//makeGround();
 
 	for (int i = 0; i < 49; i++) {
 		makeWall(i);
@@ -128,14 +128,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	
 	for (int i = 0; i < 4; i++) {
 		makeShooter(i);
+		makeEnemy(i);
+		makeClockwiseEnemy(i);
+		makeChaser(i);
 		makeHostileBullet();
 	}
-
-	for (int i = 0; i < 8; i++) {
-		makeEnemy(i);
-	}
-	
-
 	
 
 	for (int i = 0; i < 4; i++)
@@ -193,9 +190,10 @@ void PhysicsPlayground::Update()
 					ECS::GetComponent<Enemy>(activeEnemies[i]).ded = false;
 					activeEnemies.erase(activeEnemies.begin() + i);
 
-					//REMOVE THIS AFTER REVIEW
-					dungeon.enemiesInRooms[dungeon.currentRoom][0] = 0;
-
+					//remove this abomination as soon as possible
+					dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i + (1 + (dungeon.enemiesInRooms[dungeon.currentRoom][0]))));
+					//this line is ok though 
+					dungeon.enemiesInRooms[dungeon.currentRoom][0]--;
 				}
 			}
 		}
@@ -204,10 +202,36 @@ void PhysicsPlayground::Update()
 		for (int i = 0; i < activeEnemies.size(); i++) {
 			if (ECS::GetComponent<Enemy>(activeEnemies[i]).moves) {
 				if (ECS::GetComponent<Enemy>(activeEnemies[i]).collided) {
-					ECS::GetComponent<Enemy>(activeEnemies[i]).changeDirection();
-					ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[i]).eVelo));
+					if (ECS::GetComponent<Enemy>(activeEnemies[i]).movesClockwise)
+					{
+						ECS::GetComponent<Enemy>(activeEnemies[i]).changeClockwiseDirection();
+					}
+					else
+					{
+						ECS::GetComponent<Enemy>(activeEnemies[i]).changeDirection();
+					}
+					ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[i]).eVelo));
 					ECS::GetComponent<Enemy>(activeEnemies[i]).collided = false;
 				}
+			}
+			if (ECS::GetComponent<Enemy>(activeEnemies[i]).chases)
+			{
+				auto& chaser = ECS::GetComponent<PhysicsBody>(activeEnemies[i]);
+
+				vec3 source((chaser.GetBody()->GetPosition().x), (chaser.GetBody()->GetPosition().y), 3);
+				vec3 target((player.GetBody()->GetPosition().x), (player.GetBody()->GetPosition().y), 3);
+
+				b2Vec2 shotVec(target.x - source.x, target.y - source.y);
+				b2Vec2 unitVec = shotVec;
+				double normal = sqrt(pow(shotVec.x, 2) + pow(shotVec.y, 2));
+				unitVec.x /= normal;
+				unitVec.y /= normal;
+
+				ECS::GetComponent<Enemy>(activeEnemies[i]).setVel(unitVec.x * 25, unitVec.y * 25, 0);
+
+
+				ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[i]).eVelo));
+				ECS::GetComponent<Enemy>(activeEnemies[i]).collided = false;
 			}
 			
 		}
@@ -578,7 +602,7 @@ void PhysicsPlayground::makeShooter(int index)
 void PhysicsPlayground::makeEnemy(int index)
 {
 
-	std::string filename = "Spectre1.png";
+	std::string filename = "LinkStandby.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	enemies.push_back(entity);
@@ -591,7 +615,7 @@ void PhysicsPlayground::makeEnemy(int index)
 	ECS::AttachComponent<Damage>(entity);
 	ECS::AttachComponent<Enemy>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 19, 19);
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 16, 16);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
 
 	ECS::GetComponent<Enemy>(entity).moves = true;
@@ -608,7 +632,81 @@ void PhysicsPlayground::makeEnemy(int index)
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 1000);
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
+void PhysicsPlayground::makeClockwiseEnemy(int index)
+{
+
+	std::string filename = "BeachBall.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	enemies.push_back(entity);
+	allTiles.push_back(entity);
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Damage>(entity);
+	ECS::AttachComponent<Enemy>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 16, 16);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	ECS::GetComponent<Enemy>(entity).moves = true;
+	ECS::GetComponent<Enemy>(entity).movesClockwise = true;
+	ECS::GetComponent<Enemy>(entity).setVel(-50, 0, 0);
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(float32(500), float32(500));
+	tempDef.fixedRotation = true;
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, 8.f, vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
+void PhysicsPlayground::makeChaser(int index)
+{
+
+	std::string filename = "Spectre1.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	enemies.push_back(entity);
+	allTiles.push_back(entity);
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<Damage>(entity);
+	ECS::AttachComponent<Enemy>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 19, 19);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	ECS::GetComponent<Enemy>(entity).chases = true;
+	ECS::GetComponent<Enemy>(entity).setVel(0, 0, 0);
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(float32(500), float32(500));
+	tempDef.fixedRotation = true;
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
@@ -704,7 +802,7 @@ void PhysicsPlayground::makeBullet(int index) {
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY | ENVIRONMENT);
 	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
 	tempPhsBody.SetRotationAngleDeg(0);
 	tempPhsBody.SetFixedRotation(true);
@@ -859,6 +957,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 	int wCount = 0;
 	int sCount = 0;
 	int enemy;
+	int eCount;
+
 
 	for (int i = 0; i < enemies.size(); i++) {
 		ECS::GetComponent<PhysicsBody>(enemies[i]).SetVelocity(vec3(0, 0, 0));
@@ -872,6 +972,11 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 	
 	if (activeEnemies.size()) {
 		activeEnemies.clear();
+	}
+
+	eCount = dungeon.enemiesInRooms[dungeon.currentRoom][0];
+	for (int i = 1; i <= eCount; i++) {
+		activeEnemies.push_back(enemies[dungeon.enemiesInRooms[dungeon.currentRoom][i]]);
 	}
 
 	for (int i = 3; i > -4; i--) {
@@ -892,15 +997,16 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 			}
 
-			//modify, don't kill completely
-			if (a == 31) {
-				if (dungeon.enemiesInRooms[dungeon.currentRoom][0]) {
-					enemy = dungeon.enemiesInRooms[dungeon.currentRoom][1];
-					activeEnemies.push_back(enemies[enemy]);
-					ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+			
+			if (eCount) {
+				for (int k = 0; k < eCount; k++) {
+					if (a == dungeon.enemiesInRooms[dungeon.currentRoom][k + (1 + eCount)]) {
+						enemy = activeEnemies[k];
+						ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					}	
 				}
 			}
-
+					
 			a++;
 		}
 	}
@@ -925,7 +1031,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 
 	if (activeEnemies.size()) {
 		for (int i = 0; i < activeEnemies.size(); i++) {
-			ECS::GetComponent<PhysicsBody>(activeEnemies[0]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[0]).eVelo));
+			ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetVelocity(vec3(ECS::GetComponent<Enemy>(activeEnemies[i]).eVelo));
 		}
 	}
 }
