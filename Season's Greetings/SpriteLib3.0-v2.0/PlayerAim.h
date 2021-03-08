@@ -8,7 +8,7 @@ public:
 	bool meleeAttackOn = true;
 	
 	bool m_isMoving = false;
-	char m_dirFacing = 'D';
+	char m_dirFacing = 'S';
 
 	std::vector<std::vector<int>> aimingCoords{
 		{100, 0},     //right

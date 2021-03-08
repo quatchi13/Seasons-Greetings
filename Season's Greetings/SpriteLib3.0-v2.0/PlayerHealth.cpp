@@ -11,6 +11,7 @@ void PlayerHealth::CheckPlayerStatus()
 	else
 	{
 		std::cout << "i'm dead";
+		deceased = true;
 	}
 
 	if (health < 0)

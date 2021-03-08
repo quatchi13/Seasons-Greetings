@@ -213,6 +213,18 @@ void Player::MovementUpdate()
 
 
 	//melee attacks
+	/*if (Input::GetKeyDown(Key::J)) {
+		m_attacking = true;
+		m_locked = true;
+		needToAdd1 = true;
+	}
+	else if (Input::GetKeyDown(Key::K)) {
+		m_Shooting = true;
+		m_locked = true;
+		needToAdd1 = true;
+	}*/
+
+
 	if (needToAdd1 == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
 		if (meleeAttack) {
 			if (Input::GetKeyDown(Key::UpArrow))

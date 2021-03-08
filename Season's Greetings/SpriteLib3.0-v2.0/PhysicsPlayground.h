@@ -20,9 +20,9 @@ public:
 	void KeyboardUp() override;
 
 	void makeImage(std::string filename, int width, int height, float opacity, float x, float y, float z);
-
+	void makeCamFocus();
 	void makeWall(int index);
-	void makeGround();
+	void makeLockedDoor();
 
 	void makeSpike(int index);
 	void makeShooter(int index);
@@ -70,6 +70,7 @@ protected:
 	std::vector<int> spikes;
 	std::vector<int>allTiles;
 	std::vector<int>doors;
+	std::vector<int>blockedDoors;
 
 	int groundTile;
 	int block;

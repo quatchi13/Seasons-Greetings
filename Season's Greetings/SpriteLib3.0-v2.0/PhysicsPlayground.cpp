@@ -114,7 +114,10 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 	
-	makeImage("nothingness.png", 20, 20, 0, 0, 5, 1);
+	makeCamFocus();
+	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 1);
+	makeImage("winScreen.png", 195, 130, 1, 300, -495, 1);
+	makeImage("gameOver.png", 195, 130, 1, 800, -495, 1);
 	//makeGround();
 
 	for (int i = 0; i < 49; i++) {
@@ -143,6 +146,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeBullet(i + 1);
 
 		makeDoor(i);
+		makeLockedDoor();
 	}
 	
 	
@@ -191,9 +195,28 @@ void PhysicsPlayground::Update()
 					activeEnemies.erase(activeEnemies.begin() + i);
 
 					//remove this abomination as soon as possible
-					dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i + (1 + (dungeon.enemiesInRooms[dungeon.currentRoom][0]))));
+					
+					//dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i+(1+(dungeon.enemiesInRooms[dungeon.currentRoom][0]))));
+					//dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i + 1));
 					//this line is ok though 
 					dungeon.enemiesInRooms[dungeon.currentRoom][0]--;
+					if (!dungeon.enemiesInRooms[dungeon.currentRoom][0]) {
+						for (int i = 0; i < 4; i++) {
+							ECS::GetComponent<PhysicsBody>(blockedDoors[i]).SetPosition(b2Vec2(500, 500));
+						}
+
+						dungeon.mapCleared = true;
+						for (int i = 0; i < dungeon.nOfRooms; i++) {
+							if (dungeon.enemiesInRooms[i][0]) {
+								dungeon.mapCleared = false;
+							}
+						}
+
+						if (dungeon.mapCleared) {
+							ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(300, -500));
+							hasEnded = true;
+						}
+					}
 				}
 			}
 		}
@@ -284,10 +307,10 @@ void PhysicsPlayground::Update()
 			swordBody.SetRotationAngleDeg(0);
 		}
 		else {
-			swordBody.SetRotationAngleDeg(swordBody.GetRotationAngleDeg() - 9);
-			swordStuff.m_curDeg += 9;
+			swordBody.SetRotationAngleDeg(swordBody.GetRotationAngleDeg() - 4);
+			swordStuff.m_curDeg += 4;
 
-			if (swordStuff.m_curDeg == 90) {
+			if (swordStuff.m_curDeg >= 90) {
 				swordStuff.m_isActive = false;
 				swordStuff.m_curDeg = 0;
 				swordBody.SetVelocity(vec3(0, 0, 0));
@@ -303,6 +326,21 @@ void PhysicsPlayground::Update()
 		phealth.health--;
 		phealth.hasBeenDamaged = false;
 		phealth.CheckPlayerStatus();
+		if (phealth.deceased) {
+			ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(800, -500));
+			for (int i = 0; i < enemies.size(); i++) {
+				ECS::GetComponent<PhysicsBody>(enemies[i]).SetVelocity(vec3(0, 0, 0));
+			}
+
+			for (int i = 0; i < allTiles.size(); i++) {
+				ECS::GetComponent<PhysicsBody>(allTiles[i]).SetPosition(b2Vec2(500, 500));
+			}
+
+			if (activeEnemies.size()) {
+				activeEnemies.clear();
+			}
+			hasEnded = true;
+		}
 		
 	}
 
@@ -325,16 +363,17 @@ void PhysicsPlayground::Update()
 
 void PhysicsPlayground::KeyboardHold()
 {
-	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
-	auto& playerAiming = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
-	auto& iceBlock = ECS::GetComponent<IceBlock>(MainEntities::MainPlayer());
+	if (hasStarted) {
+		auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
+		auto& playerAiming = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
+		auto& iceBlock = ECS::GetComponent<IceBlock>(MainEntities::MainPlayer());
 
-	float speed = 0.6f;
-	int velX = 0;
-	int velY = 0;
-	if (ECS::GetComponent<Melee>(melee).m_isActive == false && iceBlock.m_isActive == false) {
+		float speed = 0.6f;
+		int velX = 0;
+		int velY = 0;
+		if (ECS::GetComponent<Melee>(melee).m_isActive == false && iceBlock.m_isActive == false) {
 		
-		if (Input::GetKey(Key::Shift)) {
+			if (Input::GetKey(Key::Shift)) {
 			iceBlock.m_isActive = true;
 		}
 		else {
@@ -342,127 +381,152 @@ void PhysicsPlayground::KeyboardHold()
 			if (Input::GetKey(Key::A))
 			{
 				velX = -70;
+				playerAiming.m_dirFacing = 'A';
 			}
 			else if (Input::GetKey(Key::D))
 			{
 				velX = 70;
+				playerAiming.m_dirFacing = 'D';
 			}
 		
 		
 			if (Input::GetKey(Key::W))
 			{
 				velY = 70;
+				playerAiming.m_dirFacing = 'W';
 			}
 			else if (Input::GetKey(Key::S))
 			{
 				velY = -70;
+				playerAiming.m_dirFacing = 'S';
 			}
 
 			iceBlock.m_isActive = false;
 			
-		}	
-	}
-	else if(iceBlock.m_isActive){
-		if (Input::GetKey(Key::Shift)) {
-			iceBlock.m_isActive = true;
+			}	
 		}
-		else {
-			iceBlock.m_isActive = false;
+		else if(iceBlock.m_isActive){
+			if (Input::GetKey(Key::Shift)) {
+				iceBlock.m_isActive = true;
+			}
+			else {
+				iceBlock.m_isActive = false;
+			}
 		}
-	}
 
-	player.SetVelocity(vec3(velX, velY, 0));
+		player.SetVelocity(vec3(velX, velY, 0));
+	}
+	
 }
 
 void PhysicsPlayground::KeyboardDown()
 {
-	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
-	auto& attacking = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
-	if (needToAdd == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
-		if (attacking.meleeAttackOn) {
-			if (Input::GetKeyDown(Key::UpArrow))
-			{
-				attacking.m_dirFacing = 'W';
-				slash();
-				needToAdd = true;
+	if (hasStarted) {
+		auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
+		auto& attacking = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
+		if (needToAdd == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
+			/*if (attacking.meleeAttackOn) {
+				if (Input::GetKeyDown(Key::UpArrow))
+				{
+					attacking.m_dirFacing = 'W';
+					slash();
+					needToAdd = true;
 
-			}else if (Input::GetKeyDown(Key::LeftArrow)){
+				}else if (Input::GetKeyDown(Key::LeftArrow)){
 
-				attacking.m_dirFacing = 'A';
-				slash();
-				needToAdd = true;
+					attacking.m_dirFacing = 'A';
+					slash();
+					needToAdd = true;
 
-			}else if (Input::GetKeyDown(Key::DownArrow)){
+				}else if (Input::GetKeyDown(Key::DownArrow)){
 			
-				attacking.m_dirFacing = 'S';
-				slash();
-				needToAdd = true;
+					attacking.m_dirFacing = 'S';
+					slash();
+					needToAdd = true;
 
-			}else if (Input::GetKeyDown(Key::RightArrow)){
+				}else if (Input::GetKeyDown(Key::RightArrow)){
 			
-				attacking.m_dirFacing = 'D';
-				slash();
-				needToAdd = true;
+					attacking.m_dirFacing = 'D';
+					slash();
+					needToAdd = true;
 
-			}else if (Input::GetKeyDown(Key::Space)) {
-				attacking.meleeAttackOn = false;
+				}else if (Input::GetKeyDown(Key::Space)) {
+					attacking.meleeAttackOn = false;
+				}
 			}
+			else {
+				if (Input::GetKeyDown(Key::UpArrow))
+				{
+					attacking.m_dirFacing = 'W';
+					fireBullet();
+					needToAdd = true;
+
+				}
+				else if (Input::GetKeyDown(Key::LeftArrow)) {
+
+					attacking.m_dirFacing = 'A';
+					fireBullet();
+					needToAdd = true;
+
+				}
+				else if (Input::GetKeyDown(Key::DownArrow)) {
+
+					attacking.m_dirFacing = 'S';
+					fireBullet();
+					needToAdd = true;
+
+				}
+				else if (Input::GetKeyDown(Key::RightArrow)) {
+
+					attacking.m_dirFacing = 'D';
+					fireBullet();
+					needToAdd = true;
+
+				}
+				else if (Input::GetKeyDown(Key::Space)) {
+					attacking.meleeAttackOn = true;
+				}
+			}*/
+
+			if (Input::GetKeyDown(Key::J))
+			{
+				slash();
+				needToAdd = true;
+			}else if (Input::GetKeyDown(Key::K))
+			{
+				fireBullet();
+				needToAdd = true;
+			}
+
 		}
-		else {
-			if (Input::GetKeyDown(Key::UpArrow))
-			{
-				attacking.m_dirFacing = 'W';
-				fireBullet();
-				needToAdd = true;
+	
 
-			}
-			else if (Input::GetKeyDown(Key::LeftArrow)) {
+		
 
-				attacking.m_dirFacing = 'A';
-				fireBullet();
-				needToAdd = true;
-
-			}
-			else if (Input::GetKeyDown(Key::DownArrow)) {
-
-				attacking.m_dirFacing = 'S';
-				fireBullet();
-				needToAdd = true;
-
-			}
-			else if (Input::GetKeyDown(Key::RightArrow)) {
-
-				attacking.m_dirFacing = 'D';
-				fireBullet();
-				needToAdd = true;
-
-			}
-			else if (Input::GetKeyDown(Key::Space)) {
-				attacking.meleeAttackOn = true;
-			}
+		if (Input::GetKeyDown(Key::T))
+		{
+			PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
+		}
+	
+		if (Input::GetKeyDown(Key::F))
+		{
+			std::cout << player.GetBody()->GetPosition().x << " " << player.GetBody()->GetPosition().y << "\n";
+		}
+	}
+	else if(hasEnded) {
+		if (Input::GetKeyDown(Key::Enter))
+		{
+			exit(1);
+		}
+	}
+	else {
+		if (Input::GetKeyDown(Key::Enter))
+		{ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(0, 15));
+			hasStarted = true;
+			
 		}
 	}
 	
-
-	if (Input::GetKeyDown(Key::J))
-	{
-		slash();
-	}
-
-	if (Input::GetKeyDown(Key::K))
-	{
-		fireBullet();
-	}
-
-	if (Input::GetKeyDown(Key::T))
-	{
-		PhysicsBody::SetDraw(!PhysicsBody::GetDraw());
-	}
-	
-	if (Input::GetKeyDown(Key::F))
-	{
-		std::cout << player.GetBody()->GetPosition().x << " " << player.GetBody()->GetPosition().y << "\n";
-	}
 
 }
 
@@ -497,6 +561,36 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(x, y, z));
 }
 
+void PhysicsPlayground::makeCamFocus()
+{
+	std::string filename = "nothingness.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	camFocus = entity;
+
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 1));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(0), float32(-500));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, BOUNDARY);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+
+}
+
 void PhysicsPlayground::makeWall(int index)
 {
 	std::string filename = "wall.png";
@@ -526,6 +620,38 @@ void PhysicsPlayground::makeWall(int index)
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3)); 
+
+}
+
+void PhysicsPlayground::makeLockedDoor()
+{
+	std::string filename = "pensivetosat.png";
+	//stores wall entity in vector
+	auto entity = ECS::CreateEntity();
+	blockedDoors.push_back(entity);
+	allTiles.push_back(entity);
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(500), float32(500));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 
 }
 
@@ -710,36 +836,6 @@ void PhysicsPlayground::makeChaser(int index)
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
-void PhysicsPlayground::makeGround()
-{
-	std::string filename = "ground.png";
-	//stores wall entity in vector
-	auto entity = ECS::CreateEntity();
-	groundTile = entity;
-
-	//attaches components to wall entity
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 180, 140);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, -4));
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_staticBody;
-	tempDef.position.Set(float32(0), float32(10));
-
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, BOUNDARY);
-	tempPhsBody.SetColor(vec4(0, 0, 0, 0.3));
-
-}
 
 void PhysicsPlayground::makeHostileBullet() {
 	std::string fileName = "bean.png";
@@ -802,7 +898,7 @@ void PhysicsPlayground::makeBullet(int index) {
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY | ENVIRONMENT);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | ENVIRONMENT);
 	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
 	tempPhsBody.SetRotationAngleDeg(0);
 	tempPhsBody.SetFixedRotation(true);
@@ -935,14 +1031,6 @@ void PhysicsPlayground::slash() {
 			swordStuff.startDeg = 45;
 		}
 
-		/*if (isRight) {
-			location.x += 8;
-			swordStuff.m_attackRight = true;
-		}
-		else {
-			location.x -= 8;
-			swordStuff.m_attackRight = false;
-		}*/
 
 		swordBody.SetPosition(location);
 		swordBody.SetRotationAngleDeg(swordStuff.startDeg);
@@ -956,6 +1044,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 	int a = 0;
 	int wCount = 0;
 	int sCount = 0;
+	int dCount = 0;
 	int enemy;
 	int eCount;
 
@@ -981,6 +1070,33 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 
 	for (int i = 3; i > -4; i--) {
 		for (int j = -4; j < 5; j++) {
+
+			if (eCount && dungeon.rooms[room][a] == 1) {
+				if (a == 4 ) {
+					block = blockedDoors[dCount];
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(0);
+					dCount++;
+				}
+				else if (a == 27) {
+					block = blockedDoors[dCount];
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(90);
+					dCount++;
+				}
+				else if (a == 58) {
+					block = blockedDoors[dCount];
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(180);
+					dCount++;
+				}
+				else if (a == 35) {
+					block = blockedDoors[dCount];
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(270);
+					dCount++;
+				}
+			}
 
 			int enemy;
 			if (dungeon.rooms[room][a] == 2)
@@ -1013,16 +1129,16 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 
 	switch (dTel) {
 	case 0:
-		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(80, 10));
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(70, 10));
 		break;
 	case 1:
-		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(-80, 10));
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(-70, 10));
 		break;
 	case 2:
-		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, 70));
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, 55));
 		break;
 	case 3:
-		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, -46));
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, -31));
 		break;
 	default:
 		std::cout << "";
