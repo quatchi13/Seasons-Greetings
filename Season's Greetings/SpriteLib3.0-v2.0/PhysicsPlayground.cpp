@@ -115,6 +115,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	
 	makeCamFocus();
+
 	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 1);
 	makeImage("winScreen.png", 195, 130, 1, 300, -495, 1);
 	makeImage("gameOver.png", 195, 130, 1, 800, -495, 1);
@@ -149,16 +150,13 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeLockedDoor();
 	}
 	
-	
-	
-	makeSword();
 
 	newRoom(4, 4);
 
 	makeImage("blackbox.png", 300, 300, 1.f, 0, 10, 30);
 
-	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
-	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(camFocus));
+	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
+	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
 }
 
 PhysicsPlaygroundListener timer;
@@ -213,7 +211,7 @@ void PhysicsPlayground::Update()
 						}
 
 						if (dungeon.mapCleared) {
-							ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(300, -500));
+							ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(300, -500));
 							hasEnded = true;
 						}
 					}
@@ -292,34 +290,6 @@ void PhysicsPlayground::Update()
 	}
 
 
-	
-
-	//melee attack
-	auto& swordBody = ECS::GetComponent<PhysicsBody>(melee);
-	auto& swordStuff = ECS::GetComponent<Melee>(melee);
-	bool swordHasHit = ECS::GetComponent<Melee>(melee).m_hasHit;
-	if (swordStuff.m_isActive) {
-		if (swordHasHit) {
-			swordStuff.m_isActive = false;
-			swordStuff.m_curDeg = 0;
-			swordBody.SetVelocity(vec3(0, 0, 0));
-			swordBody.SetPosition(b2Vec2(100, 300));
-			swordBody.SetRotationAngleDeg(0);
-		}
-		else {
-			swordBody.SetRotationAngleDeg(swordBody.GetRotationAngleDeg() - 4);
-			swordStuff.m_curDeg += 4;
-
-			if (swordStuff.m_curDeg >= 90) {
-				swordStuff.m_isActive = false;
-				swordStuff.m_curDeg = 0;
-				swordBody.SetVelocity(vec3(0, 0, 0));
-				swordBody.SetPosition(b2Vec2(100, 300));
-			}
-		}
-
-	}
-
 	auto& phealth = ECS::GetComponent<PlayerHealth>(MainEntities::MainPlayer());
 	if (phealth.hasBeenDamaged)
 	{
@@ -327,7 +297,7 @@ void PhysicsPlayground::Update()
 		phealth.hasBeenDamaged = false;
 		phealth.CheckPlayerStatus();
 		if (phealth.deceased) {
-			ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(800, -500));
+			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(800, -500));
 			for (int i = 0; i < enemies.size(); i++) {
 				ECS::GetComponent<PhysicsBody>(enemies[i]).SetVelocity(vec3(0, 0, 0));
 			}
@@ -371,7 +341,7 @@ void PhysicsPlayground::KeyboardHold()
 		float speed = 0.6f;
 		int velX = 0;
 		int velY = 0;
-		if (ECS::GetComponent<Melee>(melee).m_isActive == false && iceBlock.m_isActive == false) {
+		if (iceBlock.m_isActive == false) {
 		
 			if (Input::GetKey(Key::Shift)) {
 			iceBlock.m_isActive = true;
@@ -381,24 +351,20 @@ void PhysicsPlayground::KeyboardHold()
 			if (Input::GetKey(Key::A))
 			{
 				velX = -70;
-				playerAiming.m_dirFacing = 'A';
 			}
 			else if (Input::GetKey(Key::D))
 			{
 				velX = 70;
-				playerAiming.m_dirFacing = 'D';
 			}
 		
 		
 			if (Input::GetKey(Key::W))
 			{
 				velY = 70;
-				playerAiming.m_dirFacing = 'W';
 			}
 			else if (Input::GetKey(Key::S))
 			{
 				velY = -70;
-				playerAiming.m_dirFacing = 'S';
 			}
 
 			iceBlock.m_isActive = false;
@@ -425,77 +391,33 @@ void PhysicsPlayground::KeyboardDown()
 		auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 		auto& attacking = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer());
 		if (needToAdd == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
-			/*if (attacking.meleeAttackOn) {
-				if (Input::GetKeyDown(Key::UpArrow))
-				{
-					attacking.m_dirFacing = 'W';
-					slash();
-					needToAdd = true;
-
-				}else if (Input::GetKeyDown(Key::LeftArrow)){
-
-					attacking.m_dirFacing = 'A';
-					slash();
-					needToAdd = true;
-
-				}else if (Input::GetKeyDown(Key::DownArrow)){
-			
-					attacking.m_dirFacing = 'S';
-					slash();
-					needToAdd = true;
-
-				}else if (Input::GetKeyDown(Key::RightArrow)){
-			
-					attacking.m_dirFacing = 'D';
-					slash();
-					needToAdd = true;
-
-				}else if (Input::GetKeyDown(Key::Space)) {
-					attacking.meleeAttackOn = false;
-				}
-			}
-			else {
-				if (Input::GetKeyDown(Key::UpArrow))
-				{
-					attacking.m_dirFacing = 'W';
-					fireBullet();
-					needToAdd = true;
-
-				}
-				else if (Input::GetKeyDown(Key::LeftArrow)) {
-
-					attacking.m_dirFacing = 'A';
-					fireBullet();
-					needToAdd = true;
-
-				}
-				else if (Input::GetKeyDown(Key::DownArrow)) {
-
-					attacking.m_dirFacing = 'S';
-					fireBullet();
-					needToAdd = true;
-
-				}
-				else if (Input::GetKeyDown(Key::RightArrow)) {
-
-					attacking.m_dirFacing = 'D';
-					fireBullet();
-					needToAdd = true;
-
-				}
-				else if (Input::GetKeyDown(Key::Space)) {
-					attacking.meleeAttackOn = true;
-				}
-			}*/
-
-			if (Input::GetKeyDown(Key::J))
+			if (Input::GetKeyDown(Key::UpArrow))
 			{
-				slash();
-				needToAdd = true;
-			}else if (Input::GetKeyDown(Key::K))
-			{
+				attacking.m_dirFacing = 'W';
 				fireBullet();
 				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::LeftArrow)) {
+
+				attacking.m_dirFacing = 'A';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::DownArrow)) {
+
+				attacking.m_dirFacing = 'S';
+				fireBullet();
+				needToAdd = true;
+
+			}
+			else if (Input::GetKeyDown(Key::RightArrow)) {
+
+				attacking.m_dirFacing = 'D';
+				fireBullet();
+				needToAdd = true;
+
 			}
 
 		}
@@ -521,9 +443,9 @@ void PhysicsPlayground::KeyboardDown()
 	}
 	else {
 		if (Input::GetKeyDown(Key::Enter))
-		{ECS::GetComponent<PhysicsBody>(camFocus).SetPosition(b2Vec2(0, 15));
+		{
+			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			hasStarted = true;
-			
 		}
 	}
 	
@@ -545,12 +467,9 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 
 		//Creates entity
 	auto entity = ECS::CreateEntity();
-	if (filename == "End.png") {
-		endCard = entity;
-	}
-	else if (filename == "nothingness.png") {
-		camFocus = entity;
-	}
+	/*if (filename == "Insert first health bar file name here") {
+		healthBar = entity;
+	}*/
 	//Add components
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
@@ -566,7 +485,7 @@ void PhysicsPlayground::makeCamFocus()
 	std::string filename = "nothingness.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
-	camFocus = entity;
+	ECS::SetIsCameraFocus(entity, true);
 
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
@@ -906,37 +825,6 @@ void PhysicsPlayground::makeBullet(int index) {
 
 }
 
-void PhysicsPlayground::makeSword() {
-	auto entity = ECS::CreateEntity();
-	melee = entity;
-
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-	ECS::AttachComponent<Melee>(entity);
-	ECS::AttachComponent<IsInactive>(entity);
-
-	//Sets up components
-	std::string fileName = "nothingness.png";
-	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 16, 2);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_dynamicBody;
-	tempDef.position.Set(float32(100), float32(300));
-
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, BULLET, ENEMY | BOUNDARY, 0, 1500);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
-	tempPhsBody.SetGravityScale(0);
-}
-
 
 void PhysicsPlayground::fireBullet() {
 	b2Vec2 source((ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).GetBody()->GetPosition().x),
@@ -1005,40 +893,6 @@ void PhysicsPlayground::fireBullet() {
 	//std::cout << "pew!";
 }
 
-void PhysicsPlayground::slash() {
-	auto& swordBody = ECS::GetComponent<PhysicsBody>(melee);
-	auto& swordStuff = ECS::GetComponent<Melee>(melee);
-	char attackDir = ECS::GetComponent<PlayerAim>(MainEntities::MainPlayer()).m_dirFacing;
-	b2Vec2 location = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).GetBody()->GetPosition();
-	vec3 velocity = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).GetVelocity();
-
-	if (!swordStuff.m_isActive) {
-		switch (attackDir) {
-		case('W'):
-			location.y += 5;
-			swordStuff.startDeg = 135;
-			break;
-		case('A'):
-			location.x -= 5;
-			swordStuff.startDeg = 225;
-			break;
-		case('S'):
-			location.y -= 5;
-			swordStuff.startDeg = 305;
-			break;
-		default:
-			location.x += 5;
-			swordStuff.startDeg = 45;
-		}
-
-
-		swordBody.SetPosition(location);
-		swordBody.SetRotationAngleDeg(swordStuff.startDeg);
-		swordStuff.m_isActive = true;
-		swordStuff.m_hasHit = false;
-	}
-
-}
 
 void PhysicsPlayground::newRoom(int room, int dTel) {
 	int a = 0;

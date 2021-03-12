@@ -33,10 +33,6 @@ public:
 	void makeBullet(int index);
 	void makeHostileBullet();
 
-	void makeSword();
-
-	void slash();
-
 	void fireBullet();
 
 	void newRoom(int, int);
@@ -50,7 +46,7 @@ public:
 
 protected:
 	PhysicsPlaygroundListener listener;
-	int endCard;
+	int healthBar;
 	int attackFrames = 0;
 	bool needToAdd = false;
 
@@ -74,9 +70,7 @@ protected:
 
 	int groundTile;
 	int block;
-	int camFocus;
 
-	int melee;
 	int score = 0;
 
 	

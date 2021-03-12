@@ -212,105 +212,43 @@ void Player::MovementUpdate()
 	}
 
 
-	//melee attacks
-	/*if (Input::GetKeyDown(Key::J)) {
-		m_attacking = true;
-		m_locked = true;
-		needToAdd1 = true;
-	}
-	else if (Input::GetKeyDown(Key::K)) {
-		m_Shooting = true;
-		m_locked = true;
-		needToAdd1 = true;
-	}*/
+	if (!needToAdd1 && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
+		if (Input::GetKeyDown(Key::UpArrow))
+		{
+			m_moving = false;
 
-
-	if (needToAdd1 == false && !ECS::GetComponent<IceBlock>(MainEntities::MainPlayer()).m_isActive) {
-		if (meleeAttack) {
-			if (Input::GetKeyDown(Key::UpArrow))
+			/*if (m_hasPhysics)
 			{
-				m_moving = false;
-
-				/*if (m_hasPhysics)
-				{
-					m_physBody->SetVelocity(vec3());
-				}*/
-				m_facing = UP;
-				m_attacking = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::DownArrow))
-			{
-				m_moving = false;
-				m_facing = DOWN;
-				m_attacking = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::LeftArrow))
-			{
-				m_moving = false;
-				m_facing = LEFT;
-				m_attacking = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::RightArrow))
-			{
-				m_moving = false;
-				m_facing = RIGHT;
-				m_attacking = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::Space)) {
-				meleeAttack = false;
-			}
+				m_physBody->SetVelocity(vec3());
+			}*/
+			m_facing = UP;
+			m_Shooting = true;
+			m_locked = true;
 		}
-		else {
-			if (Input::GetKeyDown(Key::UpArrow))
-			{
-				m_moving = false;
-
-				/*if (m_hasPhysics)
-				{
-					m_physBody->SetVelocity(vec3());
-				}*/
-				m_facing = UP;
-				m_Shooting = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::DownArrow))
-			{
-				m_moving = false;
-				m_facing = DOWN;
-				m_Shooting = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::LeftArrow))
-			{
-				m_moving = false;
-				m_facing = LEFT;
-				m_Shooting = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::RightArrow))
-			{
-				m_moving = false;
-				m_facing = RIGHT;
-				m_Shooting = true;
-				m_locked = true;
-				needToAdd1 = true;
-			}
-			else if (Input::GetKeyDown(Key::Space)) {
-				meleeAttack = true;
-			}
+		else if (Input::GetKeyDown(Key::DownArrow))
+		{
+			m_moving = false;
+			m_facing = DOWN;
+			m_Shooting = true;
+			m_locked = true;
 		}
+		else if (Input::GetKeyDown(Key::LeftArrow))
+		{
+			m_moving = false;
+			m_facing = LEFT;
+			m_Shooting = true;
+			m_locked = true;
+		}
+		else if (Input::GetKeyDown(Key::RightArrow))
+		{
+			m_moving = false;
+			m_facing = RIGHT;
+			m_Shooting = true;
+			m_locked = true;
+		}
+		
 	}
+	
 
 	//Blocking animations
 

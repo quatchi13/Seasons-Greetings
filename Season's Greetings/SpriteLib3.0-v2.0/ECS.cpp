@@ -47,3 +47,11 @@ void ECS::SetIsMainPlayer(unsigned entity, bool mainPlayer)
 		MainEntities::MainPlayer(entity);
 	}
 }
+
+void ECS::SetIsCameraFocus(unsigned entity, bool cameraFocus)
+{
+	if (cameraFocus)
+	{
+		MainEntities::CameraFocus(entity);
+	}
+}

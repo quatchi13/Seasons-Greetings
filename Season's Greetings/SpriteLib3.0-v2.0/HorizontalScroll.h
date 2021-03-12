@@ -24,7 +24,7 @@ private:
 	Camera* m_cam = nullptr;
 	Transform* m_focus = nullptr;
 
-	float m_offset = 5.f;
+	float m_offset = 0.f;
 };
 
 //Sends vertical scrolling camera TO json file
