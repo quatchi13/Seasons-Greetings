@@ -119,6 +119,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 1);
 	makeImage("winScreen.png", 195, 130, 1, 300, -495, 1);
 	makeImage("gameOver.png", 195, 130, 1, 800, -495, 1);
+	makeImage("Health10.png", 25, 25, 1, 105, 60, 40);
 	//makeGround();
 
 	for (int i = 0; i < 49; i++) {
@@ -311,7 +312,51 @@ void PhysicsPlayground::Update()
 			}
 			hasEnded = true;
 		}
-		
+		if (phealth.health == 9)
+		{
+			std::string fileN = "Health9.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 8)
+		{
+			std::string fileN = "Health8.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 7)
+		{
+			std::string fileN = "Health7.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 6)
+		{
+			std::string fileN = "Health6.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 5)
+		{
+			std::string fileN = "Health5.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 4)
+		{
+			std::string fileN = "Health4.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 3)
+		{
+			std::string fileN = "Health3.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 2)
+		{
+			std::string fileN = "Health2.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
+		else if (phealth.health == 1)
+		{
+			std::string fileN = "Health1.png";
+			ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+		}
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -467,9 +512,10 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 
 		//Creates entity
 	auto entity = ECS::CreateEntity();
-	/*if (filename == "Insert first health bar file name here") {
+	if (filename == "Health10.png") {
 		healthBar = entity;
-	}*/
+	}
+	
 	//Add components
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
