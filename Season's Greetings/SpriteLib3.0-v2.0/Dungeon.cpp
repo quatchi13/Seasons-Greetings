@@ -4,115 +4,6 @@
 #include <vector>
 #include "Dungeon.h"
 
-void Dungeon::setPositions() {
-	for (int i = 0; i < nOfRooms; i++) {
-		if (enemiesInRooms[i][0]) {
-			for (int j = 0; j < (enemiesInRooms[i][0]); j++) {
-				if (j == 0) {
-					if (rooms[i][22]) {
-						enemiesInRooms[i].push_back(22);
-					}else if (rooms[i][21]) {
-						enemiesInRooms[i].push_back(21);
-					}
-					else if (rooms[i][23]) {
-						enemiesInRooms[i].push_back(23);
-					}
-					else if (rooms[i][12]) {
-						enemiesInRooms[i].push_back(12);
-					}
-					else {
-						enemiesInRooms[i].push_back(14);
-					}
-				}
-				else if (j == 1) {
-					if (rooms[i][40]) {
-						enemiesInRooms[i].push_back(40);
-					}
-					else if (rooms[i][41]) {
-						enemiesInRooms[i].push_back(41);
-					}
-					else if (rooms[i][39]) {
-						enemiesInRooms[i].push_back(39);
-					}
-					else if (rooms[i][50]) {
-						enemiesInRooms[i].push_back(50);
-					}
-					else {
-						enemiesInRooms[i].push_back(48);
-					}
-				}
-				else if (j == 2) {
-					if (rooms[i][30]) {
-						enemiesInRooms[i].push_back(30);
-					}
-					else if (rooms[i][20]) {
-						enemiesInRooms[i].push_back(20);
-					}
-					else if (rooms[i][11]) {
-						enemiesInRooms[i].push_back(11);
-					}
-					else if (rooms[i][10]) {
-						enemiesInRooms[i].push_back(10);
-					}
-					else {
-						enemiesInRooms[i].push_back(19);
-					}
-				}
-				else if (j == 3) {
-					if (rooms[i][29]) {
-						enemiesInRooms[i].push_back(29);
-					}
-					else if (rooms[i][38]) {
-						enemiesInRooms[i].push_back(38);
-					}
-					else if (rooms[i][47]) {
-						enemiesInRooms[i].push_back(47);
-					}
-					else if (rooms[i][46]) {
-						enemiesInRooms[i].push_back(46);
-					}
-					else {
-						enemiesInRooms[i].push_back(37);
-					}
-				}
-				else if (j == 4) {
-					if (rooms[i][32]) {
-						enemiesInRooms[i].push_back(32);
-					}
-					else if (rooms[i][24]) {
-						enemiesInRooms[i].push_back(24);
-					}
-					else if (rooms[i][15]) {
-						enemiesInRooms[i].push_back(15);
-					}
-					else if (rooms[i][16]) {
-						enemiesInRooms[i].push_back(16);
-					}
-					else {
-						enemiesInRooms[i].push_back(25);
-					}
-				}
-				else {
-					if (rooms[i][33]) {
-						enemiesInRooms[i].push_back(33);
-					}
-					else if (rooms[i][42]) {
-						enemiesInRooms[i].push_back(42);
-					}
-					else if (rooms[i][51]) {
-						enemiesInRooms[i].push_back(51);
-					}
-					else if (rooms[i][52]) {
-						enemiesInRooms[i].push_back(52);
-					}
-					else {
-						enemiesInRooms[i].push_back(43);
-					}
-				}
-			}
-		}
-	}
-}
 
 void Dungeon::setEnemyCount() {
 	indexes.clear();
@@ -186,7 +77,6 @@ void Dungeon::populateRooms() {
 void Dungeon::populateDungeon() {
 	setEnemyCount();
 	populateRooms();
-	setPositions();
 }
 
 
@@ -383,4 +273,438 @@ Dungeon::Dungeon()
 	selectRooms();
 	getPosition();
 	populateDungeon();
+}
+
+
+//this function is called when frostbite enters a room containing enemies
+//it sets the locations of all room enemies, based on which door the room was entered from
+//i deeply apologize to anyone who has to read this wretched function
+void Dungeon::setPositions(int direction) {
+	switch (direction) {
+	case 0:
+		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
+			if (j == 0) {
+				if (rooms[currentRoom][10]) {
+					enemiesInRooms[currentRoom].push_back(10);
+				}
+				else if (rooms[currentRoom][20]) {
+					enemiesInRooms[currentRoom].push_back(20);
+				}
+				else if (rooms[currentRoom][28]) {
+					enemiesInRooms[currentRoom].push_back(28);
+				}
+				else if (rooms[currentRoom][30]) {
+					enemiesInRooms[currentRoom].push_back(30);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(15);
+				}
+			}
+			else if (j == 1) {
+				if (rooms[currentRoom][46]) {
+					enemiesInRooms[currentRoom].push_back(46);
+				}
+				else if (rooms[currentRoom][38]) {
+					enemiesInRooms[currentRoom].push_back(38);
+				}
+				else if (rooms[currentRoom][29]) {
+					enemiesInRooms[currentRoom].push_back(29);
+				}
+				else if (rooms[currentRoom][31]) {
+					enemiesInRooms[currentRoom].push_back(31);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(51);
+				}
+			}
+			else if (j == 2) {
+				if (rooms[currentRoom][19]) {
+					enemiesInRooms[currentRoom].push_back(19);
+				}
+				else if (rooms[currentRoom][12]) {
+					enemiesInRooms[currentRoom].push_back(12);
+				}
+				else if (rooms[currentRoom][13]) {
+					enemiesInRooms[currentRoom].push_back(13);
+				}
+				else if (rooms[currentRoom][14]) {
+					enemiesInRooms[currentRoom].push_back(14);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(24);
+				}
+			}
+			else if (j == 3) {
+				if (rooms[currentRoom][37]) {
+					enemiesInRooms[currentRoom].push_back(37);
+				}
+				else if (rooms[currentRoom][48]) {
+					enemiesInRooms[currentRoom].push_back(48);
+				}
+				else if (rooms[currentRoom][49]) {
+					enemiesInRooms[currentRoom].push_back(49);
+				}
+				else if (rooms[currentRoom][50]) {
+					enemiesInRooms[currentRoom].push_back(50);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(42);
+				}
+			}
+			else if (j == 4) {
+				if (rooms[currentRoom][11]) {
+					enemiesInRooms[currentRoom].push_back(11);
+				}
+				else if (rooms[currentRoom][21]) {
+					enemiesInRooms[currentRoom].push_back(21);
+				}
+				else if (rooms[currentRoom][22]) {
+					enemiesInRooms[currentRoom].push_back(22);
+				}
+				else if (rooms[currentRoom][23]) {
+					enemiesInRooms[currentRoom].push_back(23);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(16);
+				}
+			}
+			else {
+				if (rooms[currentRoom][47]) {
+					enemiesInRooms[currentRoom].push_back(47);
+				}
+				else if (rooms[currentRoom][39]) {
+					enemiesInRooms[currentRoom].push_back(39);
+				}
+				else if (rooms[currentRoom][40]) {
+					enemiesInRooms[currentRoom].push_back(40);
+				}
+				else if (rooms[currentRoom][41]) {
+					enemiesInRooms[currentRoom].push_back(41);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(52);
+				}
+			}
+		}
+		break;
+
+	case 1:
+		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
+			if (j == 0) {
+				if (rooms[currentRoom][16]) {
+					enemiesInRooms[currentRoom].push_back(16);
+				}
+				else if (rooms[currentRoom][24]) {
+					enemiesInRooms[currentRoom].push_back(24);
+				}
+				else if (rooms[currentRoom][34]) {
+					enemiesInRooms[currentRoom].push_back(34);
+				}
+				else if (rooms[currentRoom][32]) {
+					enemiesInRooms[currentRoom].push_back(32);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(11);
+				}
+			}
+			else if (j == 1) {
+				if (rooms[currentRoom][52]) {
+					enemiesInRooms[currentRoom].push_back(52);
+				}
+				else if (rooms[currentRoom][42]) {
+					enemiesInRooms[currentRoom].push_back(42);
+				}
+				else if (rooms[currentRoom][33]) {
+					enemiesInRooms[currentRoom].push_back(33);
+				}
+				else if (rooms[currentRoom][31]) {
+					enemiesInRooms[currentRoom].push_back(31);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(47);
+				}
+			}
+			else if (j == 2) {
+				if (rooms[currentRoom][25]) {
+					enemiesInRooms[currentRoom].push_back(25);
+				}
+				else if (rooms[currentRoom][14]) {
+					enemiesInRooms[currentRoom].push_back(14);
+				}
+				else if (rooms[currentRoom][13]) {
+					enemiesInRooms[currentRoom].push_back(13);
+				}
+				else if (rooms[currentRoom][12]) {
+					enemiesInRooms[currentRoom].push_back(12);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(20);
+				}
+			}
+			else if (j == 3) {
+				if (rooms[currentRoom][43]) {
+					enemiesInRooms[currentRoom].push_back(43);
+				}
+				else if (rooms[currentRoom][50]) {
+					enemiesInRooms[currentRoom].push_back(50);
+				}
+				else if (rooms[currentRoom][49]) {
+					enemiesInRooms[currentRoom].push_back(49);
+				}
+				else if (rooms[currentRoom][48]) {
+					enemiesInRooms[currentRoom].push_back(48);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(38);
+				}
+			}
+			else if (j == 4) {
+				if (rooms[currentRoom][15]) {
+					enemiesInRooms[currentRoom].push_back(15);
+				}
+				else if (rooms[currentRoom][23]) {
+					enemiesInRooms[currentRoom].push_back(23);
+				}
+				else if (rooms[currentRoom][22]) {
+					enemiesInRooms[currentRoom].push_back(22);
+				}
+				else if (rooms[currentRoom][21]) {
+					enemiesInRooms[currentRoom].push_back(21);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(10);
+				}
+			}
+			else {
+				if (rooms[currentRoom][51]) {
+					enemiesInRooms[currentRoom].push_back(51);
+				}
+				else if (rooms[currentRoom][41]) {
+					enemiesInRooms[currentRoom].push_back(41);
+				}
+				else if (rooms[currentRoom][40]) {
+					enemiesInRooms[currentRoom].push_back(40);
+				}
+				else if (rooms[currentRoom][39]) {
+					enemiesInRooms[currentRoom].push_back(39);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(46);
+				}
+			}
+		}
+		break;
+	case 2:
+		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
+			if (j == 0) {
+				if (rooms[currentRoom][46]) {
+					enemiesInRooms[currentRoom].push_back(46);
+				}
+				else if (rooms[currentRoom][37]) {
+					enemiesInRooms[currentRoom].push_back(37);
+				}
+				else if (rooms[currentRoom][49]) {
+					enemiesInRooms[currentRoom].push_back(49);
+				}
+				else if (rooms[currentRoom][30]) {
+					enemiesInRooms[currentRoom].push_back(30);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(21);
+				}
+			}
+			else if (j == 1) {
+				if (rooms[currentRoom][52]) {
+					enemiesInRooms[currentRoom].push_back(52);
+				}
+				else if (rooms[currentRoom][43]) {
+					enemiesInRooms[currentRoom].push_back(43);
+				}
+				else if (rooms[currentRoom][40]) {
+					enemiesInRooms[currentRoom].push_back(40);
+				}
+				else if (rooms[currentRoom][32]) {
+					enemiesInRooms[currentRoom].push_back(32);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(23);
+				}
+			}
+			else if (j == 2) {
+				if (rooms[currentRoom][47]) {
+					enemiesInRooms[currentRoom].push_back(47);
+				}
+				else if (rooms[currentRoom][38]) {
+					enemiesInRooms[currentRoom].push_back(38);
+				}
+				else if (rooms[currentRoom][28]) {
+					enemiesInRooms[currentRoom].push_back(28);
+				}
+				else if (rooms[currentRoom][19]) {
+					enemiesInRooms[currentRoom].push_back(19);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(10);
+				}
+			}
+			else if (j == 3) {
+				if (rooms[currentRoom][51]) {
+					enemiesInRooms[currentRoom].push_back(51);
+				}
+				else if (rooms[currentRoom][42]) {
+					enemiesInRooms[currentRoom].push_back(42);
+				}
+				else if (rooms[currentRoom][34]) {
+					enemiesInRooms[currentRoom].push_back(34);
+				}
+				else if (rooms[currentRoom][25]) {
+					enemiesInRooms[currentRoom].push_back(25);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(16);
+				}
+			}
+			else if (j == 4) {
+				if (rooms[currentRoom][48]) {
+					enemiesInRooms[currentRoom].push_back(48);
+				}
+				else if (rooms[currentRoom][39]) {
+					enemiesInRooms[currentRoom].push_back(39);
+				}
+				else if (rooms[currentRoom][29]) {
+					enemiesInRooms[currentRoom].push_back(29);
+				}
+				else if (rooms[currentRoom][20]) {
+					enemiesInRooms[currentRoom].push_back(20);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(11);
+				}
+			}
+			else {
+				if (rooms[currentRoom][50]) {
+					enemiesInRooms[currentRoom].push_back(50);
+				}
+				else if (rooms[currentRoom][41]) {
+					enemiesInRooms[currentRoom].push_back(41);
+				}
+				else if (rooms[currentRoom][33]) {
+					enemiesInRooms[currentRoom].push_back(33);
+				}
+				else if (rooms[currentRoom][24]) {
+					enemiesInRooms[currentRoom].push_back(24);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(15);
+				}
+			}
+		}
+		break;
+
+	default:
+		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
+			if (j == 0) {
+				if (rooms[currentRoom][10]) {
+					enemiesInRooms[currentRoom].push_back(10);
+				}
+				else if (rooms[currentRoom][19]) {
+					enemiesInRooms[currentRoom].push_back(19);
+				}
+				else if (rooms[currentRoom][13]) {
+					enemiesInRooms[currentRoom].push_back(13);
+				}
+				else if (rooms[currentRoom][30]) {
+					enemiesInRooms[currentRoom].push_back(30);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(39);
+				}
+			}
+			else if (j == 1) {
+				if (rooms[currentRoom][16]) {
+					enemiesInRooms[currentRoom].push_back(16);
+				}
+				else if (rooms[currentRoom][25]) {
+					enemiesInRooms[currentRoom].push_back(25);
+				}
+				else if (rooms[currentRoom][22]) {
+					enemiesInRooms[currentRoom].push_back(22);
+				}
+				else if (rooms[currentRoom][32]) {
+					enemiesInRooms[currentRoom].push_back(32);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(41);
+				}
+			}
+			else if (j == 2) {
+				if (rooms[currentRoom][11]) {
+					enemiesInRooms[currentRoom].push_back(11);
+				}
+				else if (rooms[currentRoom][20]) {
+					enemiesInRooms[currentRoom].push_back(20);
+				}
+				else if (rooms[currentRoom][28]) {
+					enemiesInRooms[currentRoom].push_back(28);
+				}
+				else if (rooms[currentRoom][37]) {
+					enemiesInRooms[currentRoom].push_back(37);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(46);
+				}
+			}
+			else if (j == 3) {
+				if (rooms[currentRoom][15]) {
+					enemiesInRooms[currentRoom].push_back(15);
+				}
+				else if (rooms[currentRoom][24]) {
+					enemiesInRooms[currentRoom].push_back(24);
+				}
+				else if (rooms[currentRoom][34]) {
+					enemiesInRooms[currentRoom].push_back(34);
+				}
+				else if (rooms[currentRoom][43]) {
+					enemiesInRooms[currentRoom].push_back(43);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(52);
+				}
+			}
+			else if (j == 4) {
+				if (rooms[currentRoom][12]) {
+					enemiesInRooms[currentRoom].push_back(12);
+				}
+				else if (rooms[currentRoom][21]) {
+					enemiesInRooms[currentRoom].push_back(21);
+				}
+				else if (rooms[currentRoom][29]) {
+					enemiesInRooms[currentRoom].push_back(29);
+				}
+				else if (rooms[currentRoom][38]) {
+					enemiesInRooms[currentRoom].push_back(38);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(47);
+				}
+			}
+			else {
+				if (rooms[currentRoom][14]) {
+					enemiesInRooms[currentRoom].push_back(14);
+				}
+				else if (rooms[currentRoom][23]) {
+					enemiesInRooms[currentRoom].push_back(23);
+				}
+				else if (rooms[currentRoom][33]) {
+					enemiesInRooms[currentRoom].push_back(33);
+				}
+				else if (rooms[currentRoom][42]) {
+					enemiesInRooms[currentRoom].push_back(42);
+				}
+				else {
+					enemiesInRooms[currentRoom].push_back(51);
+				}
+			}
+		}
+	}
 }

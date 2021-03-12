@@ -968,6 +968,10 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 		activeEnemies.push_back(enemies[dungeon.enemiesInRooms[dungeon.currentRoom][i]]);
 	}
 
+	if (eCount) {
+		dungeon.setPositions(dTel);
+	}
+
 	for (int i = 3; i > -4; i--) {
 		for (int j = -4; j < 5; j++) {
 

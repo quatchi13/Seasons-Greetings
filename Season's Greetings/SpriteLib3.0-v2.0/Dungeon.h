@@ -13,6 +13,7 @@ public:
 	Dungeon();
 	
 	void setToClear();
+	void setPositions(int);
 
 private:
 	std::ifstream iStream;
@@ -50,6 +51,6 @@ private:
 	void populateDungeon();
 	void populateRooms();
 	void setEnemyCount();
-	void setPositions();
+	
 	
 };
