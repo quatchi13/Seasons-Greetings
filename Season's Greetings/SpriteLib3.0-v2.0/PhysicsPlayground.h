@@ -45,6 +45,16 @@ public:
 
 
 protected:
+	enum gameState {
+		STARTSCREEN,
+		MENU,
+		PLAY,
+		END
+	};
+
+	int stateOfGame = STARTSCREEN;
+
+
 	PhysicsPlaygroundListener listener;
 	int healthBar;
 	int attackFrames = 0;
@@ -71,7 +81,7 @@ protected:
 	int groundTile;
 	int block;
 
-	int score = 0;
+	int screen;
 
 	
 };

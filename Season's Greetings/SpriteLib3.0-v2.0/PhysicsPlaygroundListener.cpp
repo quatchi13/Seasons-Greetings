@@ -95,6 +95,37 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}
 
+	if ((filterA.categoryBits == SPIKES && filterB.categoryBits == PLAYER) || (filterB.categoryBits == SPIKES && filterA.categoryBits == PLAYER))
+	{
+		if (filterA.categoryBits == SPIKES)
+		{
+
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).collided = true;
+
+			if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
+				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+			}
+			else
+			{
+				ECS::GetComponent<PlayerHealth>((int)fixtureB->GetBody()->GetUserData()).hasBeenDamaged = true;
+			}
+		}
+		else if (filterB.categoryBits == SPIKES)
+		{
+
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).collided = true;
+
+			if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
+				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+			}
+			else
+			{
+				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
+			}
+
+		}
+	}
+
 
 	if ((filterA.categoryBits == ENEMY && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == ENEMY && filterA.categoryBits == ENVIRONMENT))
 	{

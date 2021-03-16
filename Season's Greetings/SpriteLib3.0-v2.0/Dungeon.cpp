@@ -81,16 +81,19 @@ void Dungeon::populateDungeon() {
 
 
 
-void Dungeon::getPosition() {
+void Dungeon::getPosition(int x) {
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
-			if (map[i][j] == 5) {
+			if (map[i][j] == x) {
 				position[0] = i;
+				startPos[0] = i;
 				position[1] = j;
+				startPos[1] = j;
 			}
 		}
 	}
-	currentRoom = 4;
+	currentRoom = x - 1;
+
 }
 
 
@@ -263,17 +266,102 @@ void Dungeon::selectMap() {
 }
 
 
-
-
 Dungeon::Dungeon()
 {
 	srand(time(0));
-
+	isTutorial = false;
 	selectMap();
 	selectRooms();
-	getPosition();
+	getPosition(5);
 	populateDungeon();
 }
+
+//tutorial overload
+Dungeon::Dungeon(int) {
+	isTutorial = true;
+	nOfRooms = 7;
+	storeAsArray(tutorialMap);
+	loadTutorialRooms();
+	setDoors();
+	getPosition(6);
+	populateTutorial();
+}
+
+void Dungeon::loadTutorialRooms() {
+	iStream.open("./SGData/tutorialRoomDatabase.txt");
+
+	if (iStream.is_open()) {
+		while (iStream.good()) {
+			iStream.getline(readR, 64);
+			storeRoom();
+		}
+		iStream.close();
+	}
+	else {
+		std::cout << "Could not find tutorialRoomDatabase.txt";
+		exit(1);
+	}
+	
+}
+
+void Dungeon::storeRoom() {
+	for (int i = 0; i < 64; i++) {
+		currentLine.push_back(readR[i] - '0');
+	}
+	rooms.push_back(currentLine);
+	currentLine.clear(); 
+	
+}
+
+void Dungeon::populateTutorial() {
+	iStream.open("./SGData/tutorialEnemies.txt");
+	int line;
+	if (iStream.is_open()) {
+		while (iStream.good()) {
+			iStream >> line;
+			currRoomEnemies.push_back(line);
+			if (line) {
+				for (int i = 0; i < currRoomEnemies[0]; i++) {
+					iStream >> line;
+					currRoomEnemies.push_back(line);
+				}
+			}
+
+			enemiesInRooms.push_back(currRoomEnemies);
+			currRoomEnemies.clear();
+		}
+
+		iStream.close();
+
+
+		for (int i = 0; i < enemiesInRooms.size(); i++) {
+			for (int j = 0; j < enemiesInRooms[i].size(); j++) {
+				std::cout << enemiesInRooms[i][j] << ' ';
+			}
+			std::cout << '\n';
+		}
+
+
+
+
+	}
+	else {
+		std::cout << "Could not find tutorialEnemies.txt";
+		exit(1);
+	}
+}
+
+
+//this function deletes every data value that does not get overwritten by the constructors
+void Dungeon::WipeDungeon() {
+	mapCleared = false;
+	enemiesInRooms.clear();
+	rooms.clear();
+	dungeonPool.clear();
+	roomPool.clear();
+	indexes.clear();
+}
+
 
 
 //this function is called when frostbite enters a room containing enemies

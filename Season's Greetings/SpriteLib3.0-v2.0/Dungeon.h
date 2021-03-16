@@ -4,16 +4,20 @@ class Dungeon {
 public:
 	int map[6][6];
 	int position[2];
+	int startPos[2];
 	int nOfRooms;
 	int currentRoom;
 	bool mapCleared;
+	bool isTutorial;
 	std::vector<std::vector<int>>enemiesInRooms;
 	std::vector<std::vector<int>>rooms;
 	
 	Dungeon();
+	Dungeon(int);
 	
-	void setToClear();
+	void WipeDungeon();
 	void setPositions(int);
+	void sendToStart();
 
 private:
 	std::ifstream iStream;
@@ -37,7 +41,7 @@ private:
 	void getRoomPool();
 
 	void selectMap();
-	void getPosition();
+	void getPosition(int);
 	void getNofRooms();
 	void selectRooms();
 
@@ -51,6 +55,16 @@ private:
 	void populateDungeon();
 	void populateRooms();
 	void setEnemyCount();
+
+
+	//tutorial initialization
+	std::vector<int>tutorialMap{ 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 6 , 7, 0, 0, 0, 0, 0 ,0 ,0 ,0 };
+	
+	void loadTutorialRooms();
+	void storeRoom();
+	void populateTutorial();
+
+
 	
 	
 };
