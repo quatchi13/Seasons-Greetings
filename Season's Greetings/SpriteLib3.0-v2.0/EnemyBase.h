@@ -15,6 +15,7 @@ public:
 	bool collided = false;
 	bool movesClockwise = false;
 	bool chases = false;
+	std::string sprite;
 
 	vec3 eVelo = (vec3(0, 0, 0));
 	vec3 ePosi = (vec3(0, 0, 0));

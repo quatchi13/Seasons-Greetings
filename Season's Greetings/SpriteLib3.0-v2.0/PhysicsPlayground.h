@@ -43,6 +43,7 @@ public:
 
 	void applyKnockBack();
 
+	void setupRoomEnemies(int);
 
 protected:
 	enum gameState {
