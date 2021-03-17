@@ -128,7 +128,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 30);
 	makeImage("Health10.png", 25, 25, 1, 105, 60, 40);
-	makeImage("ground.png", 200, 200, 1, 0, 15, 1);
+	makeImage("ground.png", 300, 300, 1, 0, 15, 1);
 
 	for (int i = 0; i < 49; i++) {
 		makeWall(i);
@@ -600,7 +600,7 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 void PhysicsPlayground::makeCamFocus()
 {
 	
-	std::string filename = "blackbox.png";
+	std::string filename = "box.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	ECS::SetIsCameraFocus(entity, true);
