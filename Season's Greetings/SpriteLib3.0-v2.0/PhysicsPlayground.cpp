@@ -126,9 +126,9 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	
 	makeCamFocus();
 
-	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 1);
+	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 30);
 	makeImage("Health10.png", 25, 25, 1, 105, 60, 40);
-	//makeGround();
+	makeImage("ground.png", 200, 200, 1, 0, 15, 1);
 
 	for (int i = 0; i < 49; i++) {
 		makeWall(i);
@@ -170,8 +170,8 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	chaser.sprite = "Spectre1.png";
 
 
-
-	makeImage("blackbox.png", 300, 300, 1.f, 0, 10, 30);
+	
+	
 
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
@@ -599,7 +599,8 @@ void PhysicsPlayground::makeImage(std::string filename, int width, int height, f
 
 void PhysicsPlayground::makeCamFocus()
 {
-	std::string filename = "nothingness.png";
+	
+	std::string filename = "blackbox.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	ECS::SetIsCameraFocus(entity, true);
@@ -608,8 +609,8 @@ void PhysicsPlayground::makeCamFocus()
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 1));
+	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 300, 300);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -40, 10));
 
 	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -623,7 +624,7 @@ void PhysicsPlayground::makeCamFocus()
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, BOUNDARY);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+	tempPhsBody.SetColor(vec4(0, 0, 0, 0));
 
 }
 
@@ -661,7 +662,7 @@ void PhysicsPlayground::makeWall(int index)
 
 void PhysicsPlayground::makeLockedDoor()
 {
-	std::string filename = "pensivetosat.png";
+	std::string filename = "locked.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	blockedDoors.push_back(entity);
