@@ -4,6 +4,7 @@
 #include "Vector.h"
 #include "PlayerHealth.h"
 #include "Dungeon.h";
+#include <Windows.h>
 #include <vector>
 #include <random>
 #include <time.h>
@@ -131,7 +132,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeSpike(i);
 	}
 	
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 6; i++) {
 		makeShooter(i);
 		makeEnemy(i);
 		makeClockwiseEnemy(i);
@@ -214,9 +215,11 @@ void PhysicsPlayground::Update()
 								player.SetPosition(b2Vec2(0, 15));
 								dungeon = &unseeded;
 								std::vector<Dungeon>layouts;
-								
-
 								newRoom(dungeon->currentRoom, 4);
+								ECS::GetComponent<PlayerHealth>(MainEntities::MainPlayer()).health = 10;
+								std::string fileN = "Health10.png";
+								ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
+								PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
 							}
 							else {
 								std::string fName = "winScreen.png";
@@ -529,6 +532,7 @@ void PhysicsPlayground::KeyboardDown()
 			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			newRoom(dungeon->currentRoom, 4);
 			stateOfGame = PLAY;
+			PlaySound(TEXT("Tutorial Music.wav"), NULL, SND_LOOP | SND_ASYNC);
 		}
 		
 		if (Input::GetKeyDown(Key::D)) {
@@ -536,6 +540,7 @@ void PhysicsPlayground::KeyboardDown()
 			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			newRoom(dungeon->currentRoom, 4);
 			stateOfGame = PLAY;
+			PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
 		}
 		
 	}
