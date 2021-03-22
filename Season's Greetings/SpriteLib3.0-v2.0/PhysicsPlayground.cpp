@@ -26,8 +26,10 @@ PhysicsPlayground::PhysicsPlayground(std::string name)
 }
 
 Dungeon* dungeon;
-Dungeon tutorial(0);
-Dungeon unseeded;
+Dungeon tutorial(true);
+Dungeon level1(1);
+Dungeon level2(2);
+Dungeon level3(3);
 
 Enemy shooter;
 Enemy marcher;
@@ -130,7 +132,19 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	makeImage("Health10.png", 25, 25, 1, 105, 60, 40);
 	makeImage("ground.png", 300, 300, 1, 0, 15, 1);
 
-	for (int i = 0; i < 49; i++) {
+	{
+		makeFrame("wall1.png", 60, 20, vec3(-40, 70, 1));
+		makeFrame("wall1.png", 60, 20, vec3(40, 70, 1));
+		makeFrame("wall2.png", 20, 60, vec3(-80, 50, 1));
+		makeFrame("wall3.png", 20, 60, vec3(80, 50, 1));
+		makeFrame("wall4.png", 20, 60, vec3(-80, -30, 1));
+		makeFrame("wall5.png", 20, 60, vec3(80, -30, 1));
+		makeFrame("wall6.png", 60, 20, vec3(-40, -50, 1));
+		makeFrame("wall6.png", 60, 20, vec3(40, -50, 1)); 
+	}
+
+
+	for (int i = 0; i < 25; i++) {
 		makeWall(i);
 	}
 
@@ -155,24 +169,31 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeLockedDoor();
 	}
 	
+	//setup enemy molds
+	{
 	shooter.shoots = true;
 	shooter.sprite = "Bean_shooter.png";
+	shooter.files = { "aSprites/Bean Shooter/Bean shooter1.png" };
+	shooter.totalFrames = 60;
 	marcher.moves = true;
 	marcher.eVelo = vec3(-50, 1, 0);
 	marcher.sprite = "CornKnight1.png";
+	marcher.files = { "aSprites/Corn knight/CornKnight1.png", "aSprites/Corn knight/CornKnight2.png", "aSprites/Corn knight/CornKnight3.png", "aSprites/Corn knight/CornKnight4.png", "aSprites/Corn knight/CornKnight5.png", "aSprites/Corn knight/CornKnight6.png", "aSprites/Corn knight/CornKnight7.png", "aSprites/Corn knight/CornKnight8.png", "aSprites/Corn knight/CornKnight9.png" };
+	marcher.totalFrames = 90;
 	bouncer.moves = true;
 	bouncer.movesClockwise = true;
 	bouncer.eVelo = vec3(-50, 0, 0);
 	bouncer.sprite = "WilloWisp1.png";
+	bouncer.files = { "aSprites/wisp/WilloWisp1.png", "aSprites/wisp/WilloWisp2.png", "aSprites/wisp/WilloWisp3.png", "aSprites/wisp/WilloWisp4.png", "aSprites/wisp/WilloWisp5.png", "aSprites/wisp/WilloWisp6.png", "aSprites/wisp/WilloWisp7.png", "aSprites/wisp/WilloWisp8.png", "aSprites/wisp/WilloWisp9.png", "aSprites/wisp/WilloWisp10.png" };
+	bouncer.totalFrames = 120;
 	chaser.moves = true;
 	chaser.chases = true;
 	chaser.eVelo = vec3(0, 0, 0);
 	chaser.sprite = "Spectre1.png";
-
-
+	chaser.files = { "aSprites/Spectre/Spectre1.png", "aSprites/Spectre/Spectre2.png", "aSprites/Spectre/Spectre3.png", "aSprites/Spectre/Spectre4.png" };
+	chaser.totalFrames = 48;
+	}
 	
-	
-
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::CameraFocus()));
 }
@@ -191,6 +212,13 @@ void PhysicsPlayground::Update()
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 	auto& pain = ECS::GetComponent<Player>(MainEntities::MainPlayer());
 	pain.Update();
+	if (jAnimatedEntities.size()) {
+		for (int i = 0; i < jAnimatedEntities.size(); i++) {
+			ECS::GetComponent<jAnims>(jAnimatedEntities[i]).updateJAnim
+			(jAnimatedEntities[i], ECS::GetComponent<Sprite>(jAnimatedEntities[i]).GetWidth(), ECS::GetComponent<Sprite>(jAnimatedEntities[i]).GetHeight());
+		}
+	}
+
 
 	for (int i = 0; i < hostileBullets.size(); i++) {
 		if (ECS::GetComponent<IsInactive>(hostileBullets[i]).hit) {
@@ -209,9 +237,9 @@ void PhysicsPlayground::Update()
 					ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetPosition(b2Vec2(500, 500));
 					ECS::GetComponent<Enemy>(activeEnemies[i]).ded = false;
 					activeEnemies.erase(activeEnemies.begin() + i);
+					jAnimatedEntities.erase(jAnimatedEntities.begin() + i);
 
 					//remove this abomination as soon as possible
-					
 					//dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i+(1+(dungeon.enemiesInRooms[dungeon.currentRoom][0]))));
 					dungeon->enemiesInRooms[dungeon->currentRoom].erase(dungeon->enemiesInRooms[dungeon->currentRoom].begin() + (i + 1));
 					//this line is ok though 
@@ -231,18 +259,32 @@ void PhysicsPlayground::Update()
 						if (dungeon->mapCleared) {
 							if (dungeon->isTutorial) {
 								player.SetPosition(b2Vec2(0, 15));
-								dungeon = &unseeded;
-								std::vector<Dungeon>layouts;
+								dungeon = &level1;
 								newRoom(dungeon->currentRoom, 4);
 								ECS::GetComponent<PlayerHealth>(MainEntities::MainPlayer()).health = 10;
 								std::string fileN = "Health10.png";
 								ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
 								PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
+								std::cout << "level 1 Start";
 							}
-							else {
+							else if (dungeon->level == 1) {
+
+								player.SetPosition(b2Vec2(0, 15));
+								dungeon = &level2;
+								newRoom(dungeon->currentRoom, 4);
+								std::cout << "level 2 Start";
+							}
+							else if (dungeon->level == 2) {
+
+								player.SetPosition(b2Vec2(0, 15));
+								dungeon = &level3;
+								newRoom(dungeon->currentRoom, 4);
+								std::cout << "level 3 Start";
+							}else{
 								std::string fName = "winScreen.png";
 								ECS::GetComponent<Sprite>(screen).LoadSprite(fName, 195, 130);
 								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
+								std::cout << "pog u win";
 								stateOfGame = END;
 							}
 							
@@ -554,7 +596,7 @@ void PhysicsPlayground::KeyboardDown()
 		}
 		
 		if (Input::GetKeyDown(Key::D)) {
-			dungeon = &unseeded;
+			dungeon = &level1;
 			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			newRoom(dungeon->currentRoom, 4);
 			stateOfGame = PLAY;
@@ -628,6 +670,8 @@ void PhysicsPlayground::makeCamFocus()
 
 }
 
+
+
 void PhysicsPlayground::makeWall(int index)
 {
 	std::string filename = "wall.png";
@@ -658,6 +702,32 @@ void PhysicsPlayground::makeWall(int index)
 		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3)); 
 
+}
+
+void PhysicsPlayground::makeFrame(std::string fileName, int width, int height, vec3 pos){
+	auto entity = ECS::CreateEntity();
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, width, height);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(pos.x), float32(pos.y));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
 void PhysicsPlayground::makeLockedDoor()
@@ -726,42 +796,6 @@ void PhysicsPlayground::makeSpike(int index)
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
-void PhysicsPlayground::makeShooter(int index)
-{
-
-	std::string filename = "Bean_shooter.png";
-	//stores wall entity in vector
-	auto entity = ECS::CreateEntity();
-	allTiles.push_back(entity);
-	enemies.push_back(entity);
-
-	//attaches components to wall entity
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-	ECS::AttachComponent<Damage>(entity);
-	ECS::AttachComponent<Enemy>(entity);
-
-	ECS::GetComponent<Enemy>(entity).shoots = true;
-
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_staticBody;
-	tempDef.position.Set(float32(500), float32(500));
-
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
-}
-
 void PhysicsPlayground::makeEnemy(int index)
 {
 
@@ -771,12 +805,13 @@ void PhysicsPlayground::makeEnemy(int index)
 	enemies.push_back(entity);
 	allTiles.push_back(entity);
 
-	//attaches components to wall entity
+	//attaches components to enemy entity
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 	ECS::AttachComponent<Damage>(entity);
 	ECS::AttachComponent<Enemy>(entity);
+	ECS::AttachComponent<jAnims>(entity);
 
 	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 16, 16);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
@@ -794,80 +829,6 @@ void PhysicsPlayground::makeEnemy(int index)
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, 8.f, vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
-}
-
-void PhysicsPlayground::makeClockwiseEnemy(int index)
-{
-
-	std::string filename = "BeachBall.png";
-	//stores wall entity in vector
-	auto entity = ECS::CreateEntity();
-	enemies.push_back(entity);
-	allTiles.push_back(entity);
-
-	//attaches components to wall entity
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-	ECS::AttachComponent<Damage>(entity);
-	ECS::AttachComponent<Enemy>(entity);
-
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 16, 16);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
-
-	ECS::GetComponent<Enemy>(entity).moves = true;
-	ECS::GetComponent<Enemy>(entity).movesClockwise = true;
-	ECS::GetComponent<Enemy>(entity).setVel(-50, 0, 0);
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_dynamicBody;
-	tempDef.position.Set(float32(500), float32(500));
-	tempDef.fixedRotation = true;
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, 8.f, vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
-	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
-}
-
-void PhysicsPlayground::makeChaser(int index)
-{
-
-	std::string filename = "Spectre1.png";
-	//stores wall entity in vector
-	auto entity = ECS::CreateEntity();
-	enemies.push_back(entity);
-	allTiles.push_back(entity);
-
-	//attaches components to wall entity
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-	ECS::AttachComponent<Damage>(entity);
-	ECS::AttachComponent<Enemy>(entity);
-
-	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 19, 19);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
-
-	ECS::GetComponent<Enemy>(entity).chases = true;
-	ECS::GetComponent<Enemy>(entity).setVel(0, 0, 0);
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	tempDef.type = b2_dynamicBody;
-	tempDef.position.Set(float32(500), float32(500));
-	tempDef.fixedRotation = true;
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
@@ -1044,56 +1005,89 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 
 	for (int i = 3; i > -4; i--) {
 		for (int j = -4; j < 5; j++) {
-
-			if (eCount && dungeon->rooms[room][a] == 1) {
-				if (a == 4 ) {
-					block = blockedDoors[dCount];
-					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
-					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(0);
-					dCount++;
-				}
-				else if (a == 27) {
-					block = blockedDoors[dCount];
-					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
-					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(90);
-					dCount++;
-				}
-				else if (a == 58) {
-					block = blockedDoors[dCount];
-					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
-					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(180);
-					dCount++;
-				}
-				else if (a == 35) {
-					block = blockedDoors[dCount];
-					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
-					ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(270);
-					dCount++;
+			if (i == 3) {
+				if (a == 4){
+					if(!dungeon->rooms[room][a]) {
+						block = walls[wCount];
+						wCount++;
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					}else if (eCount && dungeon->rooms[room][a] == 1) {
+						block = blockedDoors[dCount];
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(0);
+						dCount++;
+					}
 				}
 			}
-
-			int enemy;
-			if (dungeon->rooms[room][a] == 2)
-			{
-				block = spikes[sCount];
-				sCount++;
-				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+			else if (j == -4) {
+				if (a == 27) {
+					if (!dungeon->rooms[room][a]) {
+						block = walls[wCount];
+						wCount++;
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					}
+					else if (eCount && dungeon->rooms[room][a] == 1) {
+						block = blockedDoors[dCount];
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(90);
+						dCount++;
+					}
+				}
 			}
+			else if (j == 4) {
+				if (a == 35) {
+					if (!dungeon->rooms[room][a]) {
+						block = walls[wCount];
+						wCount++;
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					}
+					else if (eCount && dungeon->rooms[room][a] == 1) {
+						block = blockedDoors[dCount];
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(270);
+						dCount++;
+					}
+				}
+			}else if(i == -3){
+				if (a == 58) {
+					if (!dungeon->rooms[room][a]) {
+						block = walls[wCount];
+						wCount++;
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					}
+					else if(eCount && dungeon->rooms[room][a] == 1) {
 
-
-			if (dungeon->rooms[room][a] == 0) {
-				block = walls[wCount];
-				wCount++;
-				ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						block = blockedDoors[dCount];
+						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						ECS::GetComponent<PhysicsBody>(block).SetRotationAngleDeg(180);
+						dCount++;
+					}
+				}
 			}
+			else {
+				int enemy;
+				if (dungeon->rooms[room][a] == 2)
+				{
+					block = spikes[sCount];
+					sCount++;
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+				}
 
-			
-			if (eCount) {
-				for (int k = 0; k < eCount; k++) {
-					if (a == dungeon->enemiesInRooms[dungeon->currentRoom][k + (1 + eCount)]) {
-						enemy = activeEnemies[k];
-						ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
-					}	
+
+				if (dungeon->rooms[room][a] == 0) {
+					block = walls[wCount];
+					wCount++;
+					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+				}
+
+
+				if (eCount) {
+					for (int k = 0; k < eCount; k++) {
+						if (a == dungeon->enemiesInRooms[dungeon->currentRoom][k + (1 + eCount)]) {
+							enemy = activeEnemies[k];
+							ECS::GetComponent<PhysicsBody>(enemy).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+						}
+					}
 				}
 			}
 					
@@ -1214,65 +1208,68 @@ void PhysicsPlayground::fireEnemyBullet(int shooter, int eBullet) {
 	enBul.SetVelocity(velocity);
 }
 
-void PhysicsPlayground::setupRoomEnemies(int enemyNum) {
+void PhysicsPlayground::setupRoomEnemies(int nOfE) {
 	int newEnemy;
 
-	if (enemyNum)
+	if (nOfE)
 	{
-		for (int i = 1; i <= enemyNum; i++) {
+		for (int i = 1; i <= nOfE; i++) {
+			int x = (i - 1);
 			newEnemy = dungeon->enemiesInRooms[dungeon->currentRoom][i];
-			auto& enemy = ECS::GetComponent<Enemy>(enemies[i - 1]);
-
+			
 			if (newEnemy >= 12) {
-				enemy.shoots = chaser.shoots;
-				enemy.moves = chaser.moves;
-				enemy.movesClockwise = chaser.movesClockwise;
-				enemy.chases = chaser.chases;
-
-				enemy.sprite = chaser.sprite;
-
-				enemy.eVelo = chaser.eVelo;
-				enemy.ePosi = chaser.eVelo;
+				initEnemy(x, chaser);
 			}
 			else if (newEnemy >= 8) {
-				enemy.shoots = bouncer.shoots;
-				enemy.moves = bouncer.moves;
-				enemy.movesClockwise = bouncer.movesClockwise;
-				enemy.chases = bouncer.chases;
-
-				enemy.sprite = bouncer.sprite;
-
-				enemy.eVelo = bouncer.eVelo;
-				enemy.ePosi = bouncer.eVelo;
-
+				initEnemy(x, bouncer);
 			}
 			else if (newEnemy >= 4) {
-				enemy.shoots = marcher.shoots;
-				enemy.moves = marcher.moves;
-				enemy.movesClockwise = marcher.movesClockwise;
-				enemy.chases = marcher.chases;
-
-				enemy.sprite = marcher.sprite;
-
-				enemy.eVelo = marcher.eVelo;
-				enemy.ePosi = marcher.eVelo;
+				initEnemy(x, marcher);
 			}
 			else {
-				enemy.shoots = shooter.shoots;
-				enemy.moves = shooter.moves;
-				enemy.movesClockwise = shooter.movesClockwise;
-				enemy.chases = shooter.chases;
-
-				enemy.sprite = shooter.sprite;
-
-				enemy.eVelo = shooter.eVelo;
-				enemy.ePosi = shooter.eVelo;
+				initEnemy(x, shooter);
 			}
-
-			ECS::GetComponent<Sprite>(enemies[i - 1]).LoadSprite(enemy.sprite, 16, 16);
-			activeEnemies.push_back(enemies[i - 1]);
 		}
 	}
 	
+}
+
+void PhysicsPlayground::initEnemy(int x, Enemy t) {
+
+	auto& e = ECS::GetComponent<Enemy>(enemies[x]);
+	auto& a = ECS::GetComponent<jAnims>(enemies[x]);
+
+	e.shoots = t.shoots;
+	e.moves = t.moves;
+	e.movesClockwise = t.movesClockwise;
+	e.chases = t.chases;
+
+	e.sprite = t.sprite;
+
+	e.eVelo = t.eVelo;
+	e.ePosi = t.eVelo;
+	
+	ECS::GetComponent<Sprite>(enemies[x]).LoadSprite(e.sprite, 16, 16);
+	if (a.files.size()) {
+		a.files.clear();
+	}
+
+	for (int i = 0; i < t.files.size(); i++) {
+		a.files.push_back(t.files[i]);
+	}
+	
+	a.totalFrames = t.totalFrames;
+	a.frameCount = 0;
+	a.currentImage = 0;
+
+
+	activeEnemies.push_back(enemies[x]);
+	jAnimatedEntities.push_back(enemies[x]);
+}
+
+void PhysicsPlayground::pushBackAnimations(Enemy e, int index) {
+	for (int i = 0; i < enemyAnimations[index].size(); i++) {
+		e.files.push_back(enemyAnimations[index][i]);
+	}
 }
 

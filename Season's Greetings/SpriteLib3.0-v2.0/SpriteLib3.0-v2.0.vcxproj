@@ -168,6 +168,7 @@
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="IsInactive.h" />
+    <ClInclude Include="JAFBOanims.h" />
     <ClInclude Include="JSON.h" />
     <ClInclude Include="MainEntities.h" />
     <ClInclude Include="Matrix.h" />
@@ -231,6 +232,7 @@
     <ClCompile Include="include\imgui\imgui_impl.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="JAFBOanims.cpp" />
     <ClCompile Include="JSON.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainEntities.cpp" />

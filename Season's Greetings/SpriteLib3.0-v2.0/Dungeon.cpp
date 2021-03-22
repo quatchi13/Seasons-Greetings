@@ -45,7 +45,7 @@ void Dungeon::populateRooms() {
 		if (indexes[i]) {
 			for (int j = 0; j < indexes[i]; j++) {
 				while (unsuccessful) {
-					randNum = rand() % 12;
+					randNum = rand() % 16;
 					if (j == 0) {
 						currRoomEnemies.push_back(randNum);
 						unsuccessful = false;
@@ -100,8 +100,8 @@ void Dungeon::getPosition(int x) {
 
 
 void Dungeon::setDoors() {
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 6; j++) {
+	for (int i = 1; i < 5; i++) {
+		for (int j = 1; j < 5; j++) {
 			index = map[i][j];
 			if (index) {
 				index--;
@@ -199,7 +199,7 @@ void Dungeon::getNofRooms() {
 	nOfRooms = 0;
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
-			if (map[i][j]) {
+			if (map[i][j] > 0) {
 				nOfRooms++;
 			}
 		}
@@ -222,6 +222,7 @@ void Dungeon::storeAsArray(std::vector<int> m) {
 			map[i][j] = m[j + (i*6)];
 		}
 	}
+	std::cout << "done";
 }
 
 //randomly selects one dungeon map to use as game map
@@ -234,17 +235,43 @@ void Dungeon::drawMapFromPool() {
 //converts line to vector and adds to dungeon pool
 void Dungeon::addToDPool() {
 	for (int i = 0; i < 37; i++) {
-		currentLine.push_back(readD[i] - '0');
+		int j;
+		char x = readD[i];
+		switch (x) {
+		case('A'):
+			j = 10;
+			break;
+		case('B'):
+			j = 11;
+			break;
+		case('C'):
+			j = 12;
+			break;
+		default:
+			j = x- '0';
+		}
+		
+		currentLine.push_back(j);
 	}
 
 	dungeonPool.push_back(currentLine);
-
+	std::cout << "dank";
 	currentLine.clear();
 }
 
 //reads dungeon layouts from file and stores in dungeon pool
 void Dungeon::getDungeonPool() {
-	iStream.open("./SGData/dungeonDatabase.txt");
+	std::string sourceFile;
+	if (level == 1) {
+		sourceFile = "./SGData/dungeonDatabase.txt";
+	}
+	else if (level == 2) {
+		sourceFile = "./SGData/dungeonDatabase2.txt";
+	}
+	else {
+		sourceFile = "./SGData/dungeonDatabase3.txt";
+	}
+	iStream.open(sourceFile);
 	if (iStream.is_open()) {
 		while (iStream.good()) {
 			iStream.getline(readD, 37);
@@ -254,7 +281,7 @@ void Dungeon::getDungeonPool() {
 		iStream.close();
 	}
 	else {
-		std::cout << "Could not find dungeonDatabase.txt";
+		std::cout << "Could not find " << sourceFile;
 		exit(1);
 	}
 }
@@ -266,19 +293,22 @@ void Dungeon::selectMap() {
 }
 
 
-Dungeon::Dungeon()
+Dungeon::Dungeon(int l)
 {
+	level = l;
 	srand(time(0));
 	isTutorial = false;
 	selectMap();
 	selectRooms();
 	getPosition(5);
 	populateDungeon();
+	std::cout << "success";
 }
 
 //tutorial overload
-Dungeon::Dungeon(int) {
-	isTutorial = true;
+Dungeon::Dungeon(bool t) {
+	level = 0;
+	isTutorial = t;
 	nOfRooms = 7;
 	storeAsArray(tutorialMap);
 	loadTutorialRooms();

@@ -7,13 +7,14 @@ public:
 	int startPos[2];
 	int nOfRooms;
 	int currentRoom;
+	int level;
 	bool mapCleared;
 	bool isTutorial;
 	std::vector<std::vector<int>>enemiesInRooms;
 	std::vector<std::vector<int>>rooms;
 	
-	Dungeon();
 	Dungeon(int);
+	Dungeon(bool);
 	
 	void WipeDungeon();
 	void setPositions(int);

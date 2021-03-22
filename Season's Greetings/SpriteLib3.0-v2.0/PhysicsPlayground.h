@@ -22,6 +22,8 @@ public:
 	void makeImage(std::string filename, int width, int height, float opacity, float x, float y, float z);
 	void makeCamFocus();
 	void makeWall(int index);
+	void makeFrame(std::string fileName, int width, int height, vec3 pos);
+	void makeJAnimFrame();
 	void makeLockedDoor();
 
 	void makeSpike(int index);
@@ -44,6 +46,8 @@ public:
 	void applyKnockBack();
 
 	void setupRoomEnemies(int);
+	void initEnemy(int, Enemy);
+	void pushBackAnimations(Enemy, int);
 
 protected:
 	enum gameState {
@@ -78,11 +82,19 @@ protected:
 	std::vector<int>allTiles;
 	std::vector<int>doors;
 	std::vector<int>blockedDoors;
+	std::vector<int>jAnimatedEntities;
 
 	int groundTile;
 	int block;
 
 	int screen;
+
+	std::vector<std::vector<std::string>>enemyAnimations{
+		{"aSprites/Bean Shooter/Bean shooter1.png"},
+		{"aSprites/Corn knight/CornKnight1.png", "aSprites/Corn knight/CornKnight2.png", "aSprites/Corn knight/CornKnight3.png", "aSprites/Corn knight/CornKnight4.png", "aSprites/Corn knight/CornKnight5.png", "aSprites/Corn knight/CornKnight6.png", "aSprites/Corn knight/CornKnight7.png", "aSprites/Corn knight/CornKnight8.png", "aSprites/Corn knight/CornKnight9.png"},
+		{"aSprites/wisp/WilloWisp1.png", "aSprites/wisp/WilloWisp2.png", "aSprites/wisp/WilloWisp3.png", "aSprites/wisp/WilloWisp4.png", "aSprites/wisp/WilloWisp5.png", "aSprites/wisp/WilloWisp6.png", "aSprites/wisp/WilloWisp7.png", "aSprites/wisp/WilloWisp8.png", "aSprites/wisp/WilloWisp9.png", "aSprites/wisp/WilloWisp10.png"},
+		{"aSprites/Spectre/Spectre1.png", "aSprites/Spectre/Spectre2.png", "aSprites/Spectre/Spectre.png", "aSprites/Spectre/Spectre4.png"}
+	};
 
 	
 };

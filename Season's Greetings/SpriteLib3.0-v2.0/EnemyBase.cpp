@@ -50,4 +50,21 @@ void Enemy::changeClockwiseDirection()
     }
 }
 
+void Enemy::updateAnim(int entityNum) {
+    frameCount++;
+    int dist = totalFrames/files.size();
+
+    if (dist <= frameCount) {
+        frameCount = 0;
+
+        currentFile++;
+
+        if (currentFile >= files.size()) {
+            currentFile = 0;
+        }
+
+        ECS::GetComponent<Sprite>(entityNum).LoadSprite(files[currentFile], 16, 16);
+    }
+}
+
 

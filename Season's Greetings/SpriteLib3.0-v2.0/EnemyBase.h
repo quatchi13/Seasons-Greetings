@@ -15,7 +15,14 @@ public:
 	bool collided = false;
 	bool movesClockwise = false;
 	bool chases = false;
+	bool animated = true;
+
 	std::string sprite;
+	std::vector<std::string>files;
+
+	int totalFrames = 0;
+	int frameCount = 0;
+	int currentFile = 0;
 
 	vec3 eVelo = (vec3(0, 0, 0));
 	vec3 ePosi = (vec3(0, 0, 0));
@@ -25,4 +32,6 @@ public:
 	void setVel(int, int, int);
 	void changeDirection();
 	void changeClockwiseDirection();
+
+	void updateAnim(int);
 };

@@ -23,6 +23,7 @@
 #include "EnemyBase.h"
 #include "Door.h"
 #include "Dungeon.h"
+#include "JAFBOanims.h"
 
 
 
