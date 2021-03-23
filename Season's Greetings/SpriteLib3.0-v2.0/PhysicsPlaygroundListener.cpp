@@ -139,6 +139,17 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}
 
+	if ((filterA.categoryBits == ENEMY && filterB.categoryBits == GROUND) || (filterB.categoryBits == ENEMY && filterA.categoryBits == GROUND))
+	{
+		if (filterA.categoryBits == ENEMY)
+		{
+			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).collided = true;
+		}
+		else if (filterB.categoryBits == ENEMY)
+		{
+			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).collided = true;
+		}
+	}
 
 	if ((filterA.categoryBits == DOOR && filterB.categoryBits == PLAYER) || (filterB.categoryBits == DOOR && filterA.categoryBits == PLAYER))
 	{

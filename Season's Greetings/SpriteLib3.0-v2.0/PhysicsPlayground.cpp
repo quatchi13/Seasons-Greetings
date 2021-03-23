@@ -133,8 +133,24 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	makeImage("ground.png", 300, 300, 1, 0, 15, 1);
 
 	{
-		makeJAnimFrame(std::vector<std::string>{}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(-40, 70, 1));
-		makeJAnimFrame(std::vector<std::string>{}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(40, 70, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/TileTopLeft/1.png", 
+			"aSprites/TileTopLeft/2.png",
+			"aSprites/TileTopLeft/3.png",
+			"aSprites/TileTopLeft/4.png",
+			"aSprites/TileTopLeft/5.png",
+			"aSprites/TileTopLeft/6.png",
+			"aSprites/TileTopLeft/7.png"
+		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(-40, 70, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/TileTopRight/1.png",
+			"aSprites/TileTopRight/2.png",
+			"aSprites/TileTopRight/3.png",
+			"aSprites/TileTopRight/4.png",
+			"aSprites/TileTopRight/5.png",
+			"aSprites/TileTopRight/6.png",
+			"aSprites/TileTopRight/7.png"
+		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(40, 70, 1));
 		makeFrame("wall2.png", 20, 60, vec3(-80, 50, 1));
 		makeFrame("wall3.png", 20, 60, vec3(80, 50, 1));
 		makeFrame("wall4.png", 20, 60, vec3(-80, -30, 1));
@@ -277,7 +293,7 @@ void PhysicsPlayground::Update()
 								newRoom(dungeon->currentRoom, 4);
 								std::cout << "level 3 Start";
 							}else{
-								std::string fName = "winScreen.png";
+								std::string fName = "Win.png";
 								ECS::GetComponent<Sprite>(screen).LoadSprite(fName, 195, 130);
 								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
 								std::cout << "pog u win";
@@ -577,7 +593,7 @@ void PhysicsPlayground::KeyboardDown()
 	else if (stateOfGame == STARTSCREEN){
 		if (Input::GetKeyDown(Key::Enter))
 		{
-			std::string fName = "menu.png";
+			std::string fName = "BigMenu.png";
 			ECS::GetComponent<Sprite>(screen).LoadSprite(fName, 195, 130);
 			stateOfGame = MENU;
 		}
