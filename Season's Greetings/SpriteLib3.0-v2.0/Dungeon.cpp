@@ -402,16 +402,16 @@ void Dungeon::setPositions(int direction) {
 	case 0:
 		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
 			if (j == 0) {
-				if (rooms[currentRoom][10]) {
+				if (rooms[currentRoom][10] == 1) {
 					enemiesInRooms[currentRoom].push_back(10);
 				}
-				else if (rooms[currentRoom][20]) {
+				else if (rooms[currentRoom][20] == 1) {
 					enemiesInRooms[currentRoom].push_back(20);
 				}
-				else if (rooms[currentRoom][28]) {
+				else if (rooms[currentRoom][28] == 1) {
 					enemiesInRooms[currentRoom].push_back(28);
 				}
-				else if (rooms[currentRoom][30]) {
+				else if (rooms[currentRoom][30] == 1) {
 					enemiesInRooms[currentRoom].push_back(30);
 				}
 				else {
@@ -419,16 +419,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 1) {
-				if (rooms[currentRoom][46]) {
+				if (rooms[currentRoom][46] == 1) {
 					enemiesInRooms[currentRoom].push_back(46);
 				}
-				else if (rooms[currentRoom][38]) {
+				else if (rooms[currentRoom][38] == 1) {
 					enemiesInRooms[currentRoom].push_back(38);
 				}
-				else if (rooms[currentRoom][29]) {
+				else if (rooms[currentRoom][29] == 1) {
 					enemiesInRooms[currentRoom].push_back(29);
 				}
-				else if (rooms[currentRoom][31]) {
+				else if (rooms[currentRoom][31] == 1) {
 					enemiesInRooms[currentRoom].push_back(31);
 				}
 				else {
@@ -436,16 +436,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 2) {
-				if (rooms[currentRoom][19]) {
+				if (rooms[currentRoom][19] == 1) {
 					enemiesInRooms[currentRoom].push_back(19);
 				}
-				else if (rooms[currentRoom][12]) {
+				else if (rooms[currentRoom][12] == 1) {
 					enemiesInRooms[currentRoom].push_back(12);
 				}
-				else if (rooms[currentRoom][13]) {
+				else if (rooms[currentRoom][13] == 1) {
 					enemiesInRooms[currentRoom].push_back(13);
 				}
-				else if (rooms[currentRoom][14]) {
+				else if (rooms[currentRoom][14] == 1) {
 					enemiesInRooms[currentRoom].push_back(14);
 				}
 				else {
@@ -453,16 +453,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 3) {
-				if (rooms[currentRoom][37]) {
+				if (rooms[currentRoom][37] == 1) {
 					enemiesInRooms[currentRoom].push_back(37);
 				}
-				else if (rooms[currentRoom][48]) {
+				else if (rooms[currentRoom][48] == 1) {
 					enemiesInRooms[currentRoom].push_back(48);
 				}
-				else if (rooms[currentRoom][49]) {
+				else if (rooms[currentRoom][49] == 1) {
 					enemiesInRooms[currentRoom].push_back(49);
 				}
-				else if (rooms[currentRoom][50]) {
+				else if (rooms[currentRoom][50] == 1) {
 					enemiesInRooms[currentRoom].push_back(50);
 				}
 				else {
@@ -470,16 +470,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 4) {
-				if (rooms[currentRoom][11]) {
+				if (rooms[currentRoom][11] == 1) {
 					enemiesInRooms[currentRoom].push_back(11);
 				}
-				else if (rooms[currentRoom][21]) {
+				else if (rooms[currentRoom][21] == 1) {
 					enemiesInRooms[currentRoom].push_back(21);
 				}
-				else if (rooms[currentRoom][22]) {
+				else if (rooms[currentRoom][22] == 1) {
 					enemiesInRooms[currentRoom].push_back(22);
 				}
-				else if (rooms[currentRoom][23]) {
+				else if (rooms[currentRoom][23] == 1) {
 					enemiesInRooms[currentRoom].push_back(23);
 				}
 				else {
@@ -487,16 +487,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else {
-				if (rooms[currentRoom][47]) {
+				if (rooms[currentRoom][47] == 1) {
 					enemiesInRooms[currentRoom].push_back(47);
 				}
-				else if (rooms[currentRoom][39]) {
+				else if (rooms[currentRoom][39] == 1) {
 					enemiesInRooms[currentRoom].push_back(39);
 				}
-				else if (rooms[currentRoom][40]) {
+				else if (rooms[currentRoom][40] == 1) {
 					enemiesInRooms[currentRoom].push_back(40);
 				}
-				else if (rooms[currentRoom][41]) {
+				else if (rooms[currentRoom][41] == 1) {
 					enemiesInRooms[currentRoom].push_back(41);
 				}
 				else {
@@ -509,16 +509,16 @@ void Dungeon::setPositions(int direction) {
 	case 1:
 		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
 			if (j == 0) {
-				if (rooms[currentRoom][16]) {
+				if (rooms[currentRoom][16] == 1) {
 					enemiesInRooms[currentRoom].push_back(16);
 				}
-				else if (rooms[currentRoom][24]) {
+				else if (rooms[currentRoom][24] == 1) {
 					enemiesInRooms[currentRoom].push_back(24);
 				}
-				else if (rooms[currentRoom][34]) {
+				else if (rooms[currentRoom][34] == 1) {
 					enemiesInRooms[currentRoom].push_back(34);
 				}
-				else if (rooms[currentRoom][32]) {
+				else if (rooms[currentRoom][32] == 1) {
 					enemiesInRooms[currentRoom].push_back(32);
 				}
 				else {
@@ -526,16 +526,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 1) {
-				if (rooms[currentRoom][52]) {
+				if (rooms[currentRoom][52] == 1) {
 					enemiesInRooms[currentRoom].push_back(52);
 				}
-				else if (rooms[currentRoom][42]) {
+				else if (rooms[currentRoom][42] == 1) {
 					enemiesInRooms[currentRoom].push_back(42);
 				}
-				else if (rooms[currentRoom][33]) {
+				else if (rooms[currentRoom][33] == 1) {
 					enemiesInRooms[currentRoom].push_back(33);
 				}
-				else if (rooms[currentRoom][31]) {
+				else if (rooms[currentRoom][31] == 1) {
 					enemiesInRooms[currentRoom].push_back(31);
 				}
 				else {
@@ -543,16 +543,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 2) {
-				if (rooms[currentRoom][25]) {
+				if (rooms[currentRoom][25] == 1) {
 					enemiesInRooms[currentRoom].push_back(25);
 				}
-				else if (rooms[currentRoom][14]) {
+				else if (rooms[currentRoom][14] == 1) {
 					enemiesInRooms[currentRoom].push_back(14);
 				}
-				else if (rooms[currentRoom][13]) {
+				else if (rooms[currentRoom][13] == 1) {
 					enemiesInRooms[currentRoom].push_back(13);
 				}
-				else if (rooms[currentRoom][12]) {
+				else if (rooms[currentRoom][12] == 1) {
 					enemiesInRooms[currentRoom].push_back(12);
 				}
 				else {
@@ -560,16 +560,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 3) {
-				if (rooms[currentRoom][43]) {
+				if (rooms[currentRoom][43] == 1) {
 					enemiesInRooms[currentRoom].push_back(43);
 				}
-				else if (rooms[currentRoom][50]) {
+				else if (rooms[currentRoom][50] == 1) {
 					enemiesInRooms[currentRoom].push_back(50);
 				}
-				else if (rooms[currentRoom][49]) {
+				else if (rooms[currentRoom][49] == 1) {
 					enemiesInRooms[currentRoom].push_back(49);
 				}
-				else if (rooms[currentRoom][48]) {
+				else if (rooms[currentRoom][48] == 1) {
 					enemiesInRooms[currentRoom].push_back(48);
 				}
 				else {
@@ -577,16 +577,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 4) {
-				if (rooms[currentRoom][15]) {
+				if (rooms[currentRoom][15] == 1) {
 					enemiesInRooms[currentRoom].push_back(15);
 				}
-				else if (rooms[currentRoom][23]) {
+				else if (rooms[currentRoom][23] == 1) {
 					enemiesInRooms[currentRoom].push_back(23);
 				}
-				else if (rooms[currentRoom][22]) {
+				else if (rooms[currentRoom][22] == 1) {
 					enemiesInRooms[currentRoom].push_back(22);
 				}
-				else if (rooms[currentRoom][21]) {
+				else if (rooms[currentRoom][21] == 1) {
 					enemiesInRooms[currentRoom].push_back(21);
 				}
 				else {
@@ -594,16 +594,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else {
-				if (rooms[currentRoom][51]) {
+				if (rooms[currentRoom][51] == 1) {
 					enemiesInRooms[currentRoom].push_back(51);
 				}
-				else if (rooms[currentRoom][41]) {
+				else if (rooms[currentRoom][41] == 1) {
 					enemiesInRooms[currentRoom].push_back(41);
 				}
-				else if (rooms[currentRoom][40]) {
+				else if (rooms[currentRoom][40] == 1) {
 					enemiesInRooms[currentRoom].push_back(40);
 				}
-				else if (rooms[currentRoom][39]) {
+				else if (rooms[currentRoom][39] == 1) {
 					enemiesInRooms[currentRoom].push_back(39);
 				}
 				else {
@@ -615,16 +615,16 @@ void Dungeon::setPositions(int direction) {
 	case 2:
 		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
 			if (j == 0) {
-				if (rooms[currentRoom][46]) {
+				if (rooms[currentRoom][46] == 1) {
 					enemiesInRooms[currentRoom].push_back(46);
 				}
-				else if (rooms[currentRoom][37]) {
+				else if (rooms[currentRoom][37] == 1) {
 					enemiesInRooms[currentRoom].push_back(37);
 				}
-				else if (rooms[currentRoom][49]) {
+				else if (rooms[currentRoom][49] == 1) {
 					enemiesInRooms[currentRoom].push_back(49);
 				}
-				else if (rooms[currentRoom][30]) {
+				else if (rooms[currentRoom][30] == 1) {
 					enemiesInRooms[currentRoom].push_back(30);
 				}
 				else {
@@ -632,16 +632,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 1) {
-				if (rooms[currentRoom][52]) {
+				if (rooms[currentRoom][52] == 1) {
 					enemiesInRooms[currentRoom].push_back(52);
 				}
-				else if (rooms[currentRoom][43]) {
+				else if (rooms[currentRoom][43] == 1) {
 					enemiesInRooms[currentRoom].push_back(43);
 				}
-				else if (rooms[currentRoom][40]) {
+				else if (rooms[currentRoom][40] == 1) {
 					enemiesInRooms[currentRoom].push_back(40);
 				}
-				else if (rooms[currentRoom][32]) {
+				else if (rooms[currentRoom][32] == 1) {
 					enemiesInRooms[currentRoom].push_back(32);
 				}
 				else {
@@ -649,16 +649,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 2) {
-				if (rooms[currentRoom][47]) {
+				if (rooms[currentRoom][47] == 1) {
 					enemiesInRooms[currentRoom].push_back(47);
 				}
-				else if (rooms[currentRoom][38]) {
+				else if (rooms[currentRoom][38] == 1) {
 					enemiesInRooms[currentRoom].push_back(38);
 				}
-				else if (rooms[currentRoom][28]) {
+				else if (rooms[currentRoom][28] == 1) {
 					enemiesInRooms[currentRoom].push_back(28);
 				}
-				else if (rooms[currentRoom][19]) {
+				else if (rooms[currentRoom][19] == 1) {
 					enemiesInRooms[currentRoom].push_back(19);
 				}
 				else {
@@ -666,16 +666,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 3) {
-				if (rooms[currentRoom][51]) {
+				if (rooms[currentRoom][51] == 1) {
 					enemiesInRooms[currentRoom].push_back(51);
 				}
-				else if (rooms[currentRoom][42]) {
+				else if (rooms[currentRoom][42] == 1) {
 					enemiesInRooms[currentRoom].push_back(42);
 				}
-				else if (rooms[currentRoom][34]) {
+				else if (rooms[currentRoom][34] == 1) {
 					enemiesInRooms[currentRoom].push_back(34);
 				}
-				else if (rooms[currentRoom][25]) {
+				else if (rooms[currentRoom][25] == 1) {
 					enemiesInRooms[currentRoom].push_back(25);
 				}
 				else {
@@ -683,16 +683,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 4) {
-				if (rooms[currentRoom][48]) {
+				if (rooms[currentRoom][48] == 1) {
 					enemiesInRooms[currentRoom].push_back(48);
 				}
-				else if (rooms[currentRoom][39]) {
+				else if (rooms[currentRoom][39] == 1) {
 					enemiesInRooms[currentRoom].push_back(39);
 				}
-				else if (rooms[currentRoom][29]) {
+				else if (rooms[currentRoom][29] == 1) {
 					enemiesInRooms[currentRoom].push_back(29);
 				}
-				else if (rooms[currentRoom][20]) {
+				else if (rooms[currentRoom][20] == 1) {
 					enemiesInRooms[currentRoom].push_back(20);
 				}
 				else {
@@ -700,16 +700,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else {
-				if (rooms[currentRoom][50]) {
+				if (rooms[currentRoom][50] == 1) {
 					enemiesInRooms[currentRoom].push_back(50);
 				}
-				else if (rooms[currentRoom][41]) {
+				else if (rooms[currentRoom][41] == 1) {
 					enemiesInRooms[currentRoom].push_back(41);
 				}
-				else if (rooms[currentRoom][33]) {
+				else if (rooms[currentRoom][33] == 1) {
 					enemiesInRooms[currentRoom].push_back(33);
 				}
-				else if (rooms[currentRoom][24]) {
+				else if (rooms[currentRoom][24] == 1) {
 					enemiesInRooms[currentRoom].push_back(24);
 				}
 				else {
@@ -722,16 +722,16 @@ void Dungeon::setPositions(int direction) {
 	default:
 		for (int j = 0; j < (enemiesInRooms[currentRoom][0]); j++) {
 			if (j == 0) {
-				if (rooms[currentRoom][10]) {
+				if (rooms[currentRoom][10] == 1) {
 					enemiesInRooms[currentRoom].push_back(10);
 				}
-				else if (rooms[currentRoom][19]) {
+				else if (rooms[currentRoom][19] == 1) {
 					enemiesInRooms[currentRoom].push_back(19);
 				}
-				else if (rooms[currentRoom][13]) {
+				else if (rooms[currentRoom][13] == 1) {
 					enemiesInRooms[currentRoom].push_back(13);
 				}
-				else if (rooms[currentRoom][30]) {
+				else if (rooms[currentRoom][30] == 1) {
 					enemiesInRooms[currentRoom].push_back(30);
 				}
 				else {
@@ -739,16 +739,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 1) {
-				if (rooms[currentRoom][16]) {
+				if (rooms[currentRoom][16] == 1) {
 					enemiesInRooms[currentRoom].push_back(16);
 				}
-				else if (rooms[currentRoom][25]) {
+				else if (rooms[currentRoom][25] == 1) {
 					enemiesInRooms[currentRoom].push_back(25);
 				}
-				else if (rooms[currentRoom][22]) {
+				else if (rooms[currentRoom][22] == 1) {
 					enemiesInRooms[currentRoom].push_back(22);
 				}
-				else if (rooms[currentRoom][32]) {
+				else if (rooms[currentRoom][32] == 1) {
 					enemiesInRooms[currentRoom].push_back(32);
 				}
 				else {
@@ -756,16 +756,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 2) {
-				if (rooms[currentRoom][11]) {
+				if (rooms[currentRoom][11] == 1) {
 					enemiesInRooms[currentRoom].push_back(11);
 				}
-				else if (rooms[currentRoom][20]) {
+				else if (rooms[currentRoom][20] == 1) {
 					enemiesInRooms[currentRoom].push_back(20);
 				}
-				else if (rooms[currentRoom][28]) {
+				else if (rooms[currentRoom][28] == 1) {
 					enemiesInRooms[currentRoom].push_back(28);
 				}
-				else if (rooms[currentRoom][37]) {
+				else if (rooms[currentRoom][37] == 1) {
 					enemiesInRooms[currentRoom].push_back(37);
 				}
 				else {
@@ -773,16 +773,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 3) {
-				if (rooms[currentRoom][15]) {
+				if (rooms[currentRoom][15] == 1) {
 					enemiesInRooms[currentRoom].push_back(15);
 				}
-				else if (rooms[currentRoom][24]) {
+				else if (rooms[currentRoom][24] == 1) {
 					enemiesInRooms[currentRoom].push_back(24);
 				}
-				else if (rooms[currentRoom][34]) {
+				else if (rooms[currentRoom][34] == 1) {
 					enemiesInRooms[currentRoom].push_back(34);
 				}
-				else if (rooms[currentRoom][43]) {
+				else if (rooms[currentRoom][43] == 1) {
 					enemiesInRooms[currentRoom].push_back(43);
 				}
 				else {
@@ -790,16 +790,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else if (j == 4) {
-				if (rooms[currentRoom][12]) {
+				if (rooms[currentRoom][12] == 1) {
 					enemiesInRooms[currentRoom].push_back(12);
 				}
-				else if (rooms[currentRoom][21]) {
+				else if (rooms[currentRoom][21] == 1) {
 					enemiesInRooms[currentRoom].push_back(21);
 				}
-				else if (rooms[currentRoom][29]) {
+				else if (rooms[currentRoom][29] == 1) {
 					enemiesInRooms[currentRoom].push_back(29);
 				}
-				else if (rooms[currentRoom][38]) {
+				else if (rooms[currentRoom][38] == 1) {
 					enemiesInRooms[currentRoom].push_back(38);
 				}
 				else {
@@ -807,16 +807,16 @@ void Dungeon::setPositions(int direction) {
 				}
 			}
 			else {
-				if (rooms[currentRoom][14]) {
+				if (rooms[currentRoom][14] == 1) {
 					enemiesInRooms[currentRoom].push_back(14);
 				}
-				else if (rooms[currentRoom][23]) {
+				else if (rooms[currentRoom][23] == 1) {
 					enemiesInRooms[currentRoom].push_back(23);
 				}
-				else if (rooms[currentRoom][33]) {
+				else if (rooms[currentRoom][33] == 1) {
 					enemiesInRooms[currentRoom].push_back(33);
 				}
-				else if (rooms[currentRoom][42]) {
+				else if (rooms[currentRoom][42] == 1) {
 					enemiesInRooms[currentRoom].push_back(42);
 				}
 				else {
