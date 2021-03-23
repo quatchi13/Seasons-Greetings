@@ -219,6 +219,9 @@
     <ClInclude Include="JAFBOanims.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="environmentstuff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\imgui\imgui.cpp">

@@ -23,7 +23,7 @@ public:
 	void makeCamFocus();
 	void makeWall(int index);
 	void makeFrame(std::string fileName, int width, int height, vec3 pos);
-	void makeJAnimFrame();
+	void makeJAnimFrame(std::vector<std::string>frames, std::vector<int>pauses, int width, int height, vec3 pos);
 	void makeLockedDoor();
 
 	void makeSpike(int index);
@@ -88,6 +88,7 @@ protected:
 	int block;
 
 	int screen;
+	int nonEnemyJanims = 0;
 
 	std::vector<std::vector<std::string>>enemyAnimations{
 		{"aSprites/Bean Shooter/Bean shooter1.png"},

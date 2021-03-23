@@ -95,34 +95,34 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}
 
-	if ((filterA.categoryBits == SPIKES && filterB.categoryBits == PLAYER) || (filterB.categoryBits == SPIKES && filterA.categoryBits == PLAYER))
+	if ((filterA.categoryBits == ENVIRONMENT && filterB.categoryBits == PLAYER) || (filterB.categoryBits == ENVIRONMENT && filterA.categoryBits == PLAYER))
 	{
-		if (filterA.categoryBits == SPIKES)
+		if (filterA.categoryBits == ENVIRONMENT)
 		{
-
-			ECS::GetComponent<Enemy>((int)fixtureA->GetBody()->GetUserData()).collided = true;
-
-			if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
-				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+			std::string fileName = "spikes1.png";
+			if (fileName == (ECS::GetComponent<Sprite>((int)fixtureA).GetFileName())) {
+				if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
+					std::cout << "PARRIED, YOU FUCKING CASUAL!";
+				}
+				else
+				{
+					ECS::GetComponent<PlayerHealth>((int)fixtureB->GetBody()->GetUserData()).hasBeenDamaged = true;
+				}
 			}
-			else
-			{
-				ECS::GetComponent<PlayerHealth>((int)fixtureB->GetBody()->GetUserData()).hasBeenDamaged = true;
-			}
+			
 		}
-		else if (filterB.categoryBits == SPIKES)
+		else if (filterB.categoryBits == ENVIRONMENT)
 		{
+			if(ECS::GetComponent<Sprite>((int)fixtureB->GetBody()->GetUserData()).GetFileName() == "spikes1.png") {
 
-			ECS::GetComponent<Enemy>((int)fixtureB->GetBody()->GetUserData()).collided = true;
-
-			if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
-				std::cout << "PARRIED, YOU FUCKING CASUAL!";
+				if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
+					std::cout << "PARRIED, YOU FUCKING CASUAL!";
+				}
+				else
+				{
+					ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
+				}
 			}
-			else
-			{
-				ECS::GetComponent<PlayerHealth>((int)fixtureA->GetBody()->GetUserData()).hasBeenDamaged = true;
-			}
-
 		}
 	}
 
@@ -166,7 +166,7 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}*/
 
-	if ((filterA.categoryBits == BULLET && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == BULLET && filterA.categoryBits == ENVIRONMENT))
+	if ((filterA.categoryBits == BULLET && filterB.categoryBits == GROUND) || (filterB.categoryBits == BULLET && filterA.categoryBits == GROUND))
 	{
 		if (filterA.categoryBits == BULLET)
 		{
@@ -179,7 +179,7 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 	}
 
-	if ((filterA.categoryBits == EBULLET && filterB.categoryBits == ENVIRONMENT) || (filterB.categoryBits == EBULLET && filterA.categoryBits == ENVIRONMENT))
+	if ((filterA.categoryBits == EBULLET && filterB.categoryBits == GROUND) || (filterB.categoryBits == EBULLET && filterA.categoryBits == GROUND))
 	{
 		if (filterA.categoryBits == EBULLET)
 		{

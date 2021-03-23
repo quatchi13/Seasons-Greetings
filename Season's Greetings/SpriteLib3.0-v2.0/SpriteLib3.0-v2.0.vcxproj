@@ -151,6 +151,7 @@
     <ClInclude Include="ECS.h" />
     <ClInclude Include="EffectManager.h" />
     <ClInclude Include="EnemyShotTrigger.h" />
+    <ClInclude Include="environmentstuff.h" />
     <ClInclude Include="FirstCreation.h" />
     <ClInclude Include="Framebuffer.h" />
     <ClInclude Include="Game.h" />

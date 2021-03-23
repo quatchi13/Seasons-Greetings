@@ -115,7 +115,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, -4.f), false, PLAYER, ENEMY | SPIKES | TRIGGER | EBULLET | ENVIRONMENT | DOOR, 0.f, 3.f);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, -4.f), false, PLAYER, ENEMY | SPIKES | TRIGGER | EBULLET | GROUND | ENVIRONMENT | DOOR, 0.f, 3.f);
 		//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 		//std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f, -tempSpr.GetHeight() / 2.f), b2Vec2(0, tempSpr.GetHeight() / 2.f) };
 		//tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.5);
@@ -133,8 +133,8 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	makeImage("ground.png", 300, 300, 1, 0, 15, 1);
 
 	{
-		makeFrame("wall1.png", 60, 20, vec3(-40, 70, 1));
-		makeFrame("wall1.png", 60, 20, vec3(40, 70, 1));
+		makeJAnimFrame(std::vector<std::string>{}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(-40, 70, 1));
+		makeJAnimFrame(std::vector<std::string>{}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(40, 70, 1));
 		makeFrame("wall2.png", 20, 60, vec3(-80, 50, 1));
 		makeFrame("wall3.png", 20, 60, vec3(80, 50, 1));
 		makeFrame("wall4.png", 20, 60, vec3(-80, -30, 1));
@@ -144,14 +144,10 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 
-	for (int i = 0; i < 25; i++) {
+	for (int i = 0; i < 29; i++) {
 		makeWall(i);
 	}
 
-	std::cout << "beep";
-	for (int i = 0; i < 16; i++) {
-		makeSpike(i);
-	}
 	
 	for (int i = 0; i < 6; i++) {
 		makeEnemy(i);
@@ -237,7 +233,7 @@ void PhysicsPlayground::Update()
 					ECS::GetComponent<PhysicsBody>(activeEnemies[i]).SetPosition(b2Vec2(500, 500));
 					ECS::GetComponent<Enemy>(activeEnemies[i]).ded = false;
 					activeEnemies.erase(activeEnemies.begin() + i);
-					jAnimatedEntities.erase(jAnimatedEntities.begin() + i);
+					jAnimatedEntities.erase(jAnimatedEntities.begin() + nonEnemyJanims + i);
 
 					//remove this abomination as soon as possible
 					//dungeon.enemiesInRooms[dungeon.currentRoom].erase(dungeon.enemiesInRooms[dungeon.currentRoom].begin() + (i+(1+(dungeon.enemiesInRooms[dungeon.currentRoom][0]))));
@@ -685,6 +681,7 @@ void PhysicsPlayground::makeWall(int index)
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 
+
 	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
 
@@ -726,7 +723,42 @@ void PhysicsPlayground::makeFrame(std::string fileName, int width, int height, v
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+}
+
+void PhysicsPlayground::makeJAnimFrame(std::vector<std::string> frames, std::vector<int>pauses, int width, int height, vec3 pos) {
+	auto entity = ECS::CreateEntity();
+
+	//attaches components to wall entity
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+	ECS::AttachComponent<jAnims>(entity);
+
+	ECS::GetComponent<Sprite>(entity).LoadSprite(frames[0], width, height);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
+
+	ECS::GetComponent<jAnims>(entity).files = frames;
+	ECS::GetComponent<jAnims>(entity).framePauses = pauses;
+	ECS::GetComponent<jAnims>(entity).isEvenlyDistributed = false;
+	ECS::GetComponent<jAnims>(entity).totalFrames = frames.size();
+
+	jAnimatedEntities.push_back(entity);
+	nonEnemyJanims++;
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_staticBody;
+	tempDef.position.Set(float32(pos.x), float32(pos.y));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
@@ -757,7 +789,7 @@ void PhysicsPlayground::makeLockedDoor()
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 
 }
@@ -828,7 +860,7 @@ void PhysicsPlayground::makeEnemy(int index)
 	tempDef.fixedRotation = true;
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, 8.f, vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT, 0, 10);
+	tempPhsBody = PhysicsBody(entity, tempBody, 8.f, vec2(0.f, 0.f), false, ENEMY, PLAYER | PWEAPON | BULLET | ENVIRONMENT | GROUND, 0, 10);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
 }
 
@@ -861,7 +893,7 @@ void PhysicsPlayground::makeHostileBullet() {
 	tempDef.fixedRotation = true;
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth()) / 2.f), vec2(0.f, 0.f), false, EBULLET, PLAYER | ENVIRONMENT);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth()) / 2.f), vec2(0.f, 0.f), false, EBULLET, PLAYER | GROUND);
 	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
 	tempPhsBody.SetRotationAngleDeg(0);
 	tempPhsBody.SetGravityScale(0.f);
@@ -894,7 +926,7 @@ void PhysicsPlayground::makeBullet(int index) {
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | ENVIRONMENT);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight()) / 2.f), vec2(0.f, 0.f), false, BULLET, ENEMY | GROUND);
 	tempPhsBody.SetColor(vec4(1, 0, 0, 0.3));
 	tempPhsBody.SetRotationAngleDeg(0);
 	tempPhsBody.SetFixedRotation(true);
@@ -1010,6 +1042,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 					if(!dungeon->rooms[room][a]) {
 						block = walls[wCount];
 						wCount++;
+						std::string name = "tWall.png";
+						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 					}else if (eCount && dungeon->rooms[room][a] == 1) {
 						block = blockedDoors[dCount];
@@ -1024,6 +1058,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 					if (!dungeon->rooms[room][a]) {
 						block = walls[wCount];
 						wCount++;
+						std::string name = "lWall.png";
+						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 					}
 					else if (eCount && dungeon->rooms[room][a] == 1) {
@@ -1039,6 +1075,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 					if (!dungeon->rooms[room][a]) {
 						block = walls[wCount];
 						wCount++;
+						std::string name = "rWall.png";
+						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 					}
 					else if (eCount && dungeon->rooms[room][a] == 1) {
@@ -1053,6 +1091,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 					if (!dungeon->rooms[room][a]) {
 						block = walls[wCount];
 						wCount++;
+						std::string name = "bWall.png";
+						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 					}
 					else if(eCount && dungeon->rooms[room][a] == 1) {
@@ -1068,15 +1108,21 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 				int enemy;
 				if (dungeon->rooms[room][a] == 2)
 				{
-					block = spikes[sCount];
-					sCount++;
+					block = walls[wCount];
+					wCount++;
+					std::string name = "spikes1.png";
+					ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
+					std::string urMom = (ECS::GetComponent<Sprite>(block).GetFileName());
+					std::cout << urMom;
 				}
 
 
 				if (dungeon->rooms[room][a] == 0) {
 					block = walls[wCount];
 					wCount++;
+					std::string name = "wall.png";
+					ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 				}
 
@@ -1106,7 +1152,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, 55));
 		break;
 	case 3:
-		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, -31));
+		ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer()).SetPosition(b2Vec2(0, -30));
 		break;
 	default:
 		std::cout << "";
