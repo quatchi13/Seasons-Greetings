@@ -130,7 +130,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	makeImage("StartScreen.png", 195, 130, 1, 0, -495, 30);
 	makeImage("Health10.png", 25, 25, 1, 105, 60, 40);
-	makeImage("ground.png", 300, 300, 1, 0, 15, 1);
+	makeImage("ground.png", 200, 200, 1, 0, 15, 1);
 
 	{
 		makeJAnimFrame(std::vector<std::string>{
@@ -141,7 +141,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 			"aSprites/TileTopLeft/5.png",
 			"aSprites/TileTopLeft/6.png",
 			"aSprites/TileTopLeft/7.png"
-		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(-40, 70, 1));
+		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 80, 20, vec3(-50, 70, 1));
 		makeJAnimFrame(std::vector<std::string>{
 			"aSprites/TileTopRight/1.png",
 			"aSprites/TileTopRight/2.png",
@@ -150,7 +150,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 			"aSprites/TileTopRight/5.png",
 			"aSprites/TileTopRight/6.png",
 			"aSprites/TileTopRight/7.png"
-		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 60, 20, vec3(40, 70, 1));
+		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 80, 20, vec3(50, 70, 1));
 		makeFrame("wall2.png", 20, 60, vec3(-80, 50, 1));
 		makeFrame("wall3.png", 20, 60, vec3(80, 50, 1));
 		makeFrame("wall4.png", 20, 60, vec3(-80, -30, 1));
@@ -1137,7 +1137,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 				if (dungeon->rooms[room][a] == 0) {
 					block = walls[wCount];
 					wCount++;
-					std::string name = "wall.png";
+					std::string name = "PumkinMini1.png";
 					ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 				}
