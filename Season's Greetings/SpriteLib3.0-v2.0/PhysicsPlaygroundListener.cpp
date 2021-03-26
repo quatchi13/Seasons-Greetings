@@ -99,7 +99,7 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 	{
 		if (filterA.categoryBits == ENVIRONMENT)
 		{
-			std::string fileName = "spikes1.png";
+			std::string fileName = "vines.png";
 			if (fileName == (ECS::GetComponent<Sprite>((int)fixtureA).GetFileName())) {
 				if (ECS::GetComponent<IceBlock>((int)fixtureB->GetBody()->GetUserData()).m_isActive) {
 					std::cout << "PARRIED, YOU FUCKING CASUAL!";
@@ -113,7 +113,7 @@ void PhysicsPlaygroundListener::BeginContact(b2Contact* contact)
 		}
 		else if (filterB.categoryBits == ENVIRONMENT)
 		{
-			if(ECS::GetComponent<Sprite>((int)fixtureB->GetBody()->GetUserData()).GetFileName() == "spikes1.png") {
+			if(ECS::GetComponent<Sprite>((int)fixtureB->GetBody()->GetUserData()).GetFileName() == "vines.png") {
 
 				if (ECS::GetComponent<IceBlock>((int)fixtureA->GetBody()->GetUserData()).m_isActive) {
 					std::cout << "PARRIED, YOU FUCKING CASUAL!";

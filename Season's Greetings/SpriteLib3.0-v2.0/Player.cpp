@@ -63,16 +63,16 @@ void Player::InitPlayer(std::string& fileName, std::string& animationJSON, int w
 
 	//Attack Animations\\
 
-	//AttackLeft
-	m_animController->AddAnimation(animations["LeftMeleeAttack"].get<Animation>());
-	//AttackRight
-	m_animController->AddAnimation(animations["RightMeleeAttack"].get<Animation>());
-#ifdef TOPDOWN
-	//AttackUp
-	m_animController->AddAnimation(animations["BackMeleeAttack"].get<Animation>());
-	//AttackDown
-	m_animController->AddAnimation(animations["FrontMeleeAttack"].get<Animation>());
-#endif
+//	//AttackLeft
+//	m_animController->AddAnimation(animations["LeftMeleeAttack"].get<Animation>());
+//	//AttackRight
+//	m_animController->AddAnimation(animations["RightMeleeAttack"].get<Animation>());
+//#ifdef TOPDOWN
+//	//AttackUp
+//	m_animController->AddAnimation(animations["BackMeleeAttack"].get<Animation>());
+//	//AttackDown
+//	m_animController->AddAnimation(animations["FrontMeleeAttack"].get<Animation>());
+//#endif
 
 	//Shooting anjsdnfksd
 	m_animController->AddAnimation(animations["LeftShooter"].get<Animation>());
@@ -280,22 +280,22 @@ void Player::AnimationUpdate()
 		//Puts it into the WALK category
 		activeAnimation = WALK;
 	}
-	else if (m_attacking)
-	{
-		activeAnimation = ATTACK;
+	//else if (m_attacking)
+	//{
+	//	activeAnimation = ATTACK;
 
-		//Check if the attack animation is done
-		if (m_animController->GetAnimation(m_animController->GetActiveAnim()).GetAnimationDone())
-		{
-			//Will auto set to idle
-			m_locked = false;
-			m_attacking = false;
-			//Resets the attack animation
-			m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
+	//	//Check if the attack animation is done
+	//	if (m_animController->GetAnimation(m_animController->GetActiveAnim()).GetAnimationDone())
+	//	{
+	//		//Will auto set to idle
+	//		m_locked = false;
+	//		m_attacking = false;
+	//		//Resets the attack animation
+	//		m_animController->GetAnimation(m_animController->GetActiveAnim()).Reset();
 
-			activeAnimation = IDLE;
-		}
-	}
+	//		activeAnimation = IDLE;
+	//	}
+	//}
 	else if (m_Shooting)
 	{
 		activeAnimation = SHOOT;

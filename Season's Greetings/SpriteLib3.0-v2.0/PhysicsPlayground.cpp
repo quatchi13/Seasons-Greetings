@@ -95,7 +95,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		//Sets up the components
 		std::string fileName = "spritesheets/Frost-Sheet.png";
-		std::string animations = "Frostbite.json";
+		std::string animations = "Frost.json";
 		ECS::GetComponent<Player>(entity).InitPlayer(fileName, animations, 19.5, 19.5, &ECS::GetComponent<Sprite>(entity),
 			&ECS::GetComponent<AnimationController>(entity), &ECS::GetComponent<Transform>(entity));
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 19.5, 19.5);
@@ -813,7 +813,7 @@ void PhysicsPlayground::makeLockedDoor()
 void PhysicsPlayground::makeSpike(int index)
 {
 	
-	std::string filename = "spikes1.png";
+	std::string filename = "vines.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
 	spikes.push_back(entity);
@@ -918,7 +918,7 @@ void PhysicsPlayground::makeHostileBullet() {
 
 void PhysicsPlayground::makeBullet(int index) {
 
-	std::string fileName = "Snow4.png";
+	std::string fileName = "Snow1.png";
 	vec3 source(100, 300, 3);
 	auto entity = bulletHold[index];
 
@@ -1126,7 +1126,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 				{
 					block = walls[wCount];
 					wCount++;
-					std::string name = "spikes1.png";
+					std::string name = "vines.png";
 					ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 					ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
 					std::string urMom = (ECS::GetComponent<Sprite>(block).GetFileName());

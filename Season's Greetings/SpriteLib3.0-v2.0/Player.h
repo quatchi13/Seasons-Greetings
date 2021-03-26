@@ -40,10 +40,9 @@ enum AnimTypes
 #ifdef TOPDOWN
 	IDLE = 0,
 	WALK = 4,
-	ATTACK = 8,
-	SHOOT = 12,
-	BLOCK = 16,
-	DAMAGE = 20
+	SHOOT = 8,
+	BLOCK = 12,
+	DAMAGE = 16
 
 #endif
 #ifndef TOPDOWN
