@@ -605,7 +605,7 @@ void PhysicsPlayground::KeyboardDown()
 			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			newRoom(dungeon->currentRoom, 4);
 			stateOfGame = PLAY;
-			PlaySound(TEXT("Tutorial Music.wav"), NULL, SND_LOOP | SND_ASYNC);
+			PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
 		}
 		
 		if (Input::GetKeyDown(Key::D)) {
