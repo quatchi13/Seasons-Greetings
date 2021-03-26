@@ -25,6 +25,7 @@ public:
 	void makeFrame(std::string fileName, int width, int height, vec3 pos);
 	void makeJAnimFrame(std::vector<std::string>frames, std::vector<int>pauses, int width, int height, vec3 pos);
 	void makeLockedDoor();
+	void makeNonDoor();
 
 	void makeSpike(int index);
 	void makeShooter(int index);
@@ -82,6 +83,7 @@ protected:
 	std::vector<int>allTiles;
 	std::vector<int>doors;
 	std::vector<int>blockedDoors;
+	std::vector<int>nonDoors;
 	std::vector<int>jAnimatedEntities;
 
 	int groundTile;

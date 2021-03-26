@@ -179,6 +179,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		makeHostileBullet();
 		makeDoor(i);
 		makeLockedDoor();
+		makeNonDoor();
 	}
 	
 	//setup enemy molds
@@ -711,8 +712,8 @@ void PhysicsPlayground::makeWall(int index)
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
+	tempPhsBody = PhysicsBody(entity, tempBody, float(18.f),
+		float(15.f), vec2(0.f, 0.f), false, ENVIRONMENT, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3)); 
 
 }
@@ -810,21 +811,19 @@ void PhysicsPlayground::makeLockedDoor()
 
 }
 
-void PhysicsPlayground::makeSpike(int index)
+
+void PhysicsPlayground::makeNonDoor()
 {
-	
-	std::string filename = "vines.png";
+	std::string filename = "wall.png";
 	//stores wall entity in vector
 	auto entity = ECS::CreateEntity();
-	spikes.push_back(entity);
+	nonDoors.push_back(entity);
 	allTiles.push_back(entity);
 
 	//attaches components to wall entity
 	ECS::AttachComponent<Sprite>(entity);
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
-	ECS::AttachComponent<Damage>(entity);
-	ECS::AttachComponent<Enemy>(entity);
 
 	ECS::GetComponent<Sprite>(entity).LoadSprite(filename, 20, 20);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(30, -30, 2));
@@ -840,9 +839,11 @@ void PhysicsPlayground::makeSpike(int index)
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth()),
-		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, SPIKES, PLAYER | PWEAPON | BULLET);
+		float(tempSpr.GetHeight()), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | PWEAPON | BULLET | EBULLET);
 	tempPhsBody.SetColor(vec4(0, 1, 0, 0.3));
+
 }
+
 
 void PhysicsPlayground::makeEnemy(int index)
 {
@@ -1024,6 +1025,7 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 	int wCount = 0;
 	int sCount = 0;
 	int dCount = 0;
+	int nCount = 0;
 	int enemy;
 	int eCount;
 
@@ -1056,8 +1058,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 			if (i == 3) {
 				if (a == 4){
 					if(!dungeon->rooms[room][a]) {
-						block = walls[wCount];
-						wCount++;
+						block = nonDoors[nCount];
+						nCount++;
 						std::string name = "tWall.png";
 						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
@@ -1072,8 +1074,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 			else if (j == -4) {
 				if (a == 27) {
 					if (!dungeon->rooms[room][a]) {
-						block = walls[wCount];
-						wCount++;
+						block = nonDoors[nCount];
+						nCount++;
 						std::string name = "lWall.png";
 						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
@@ -1089,8 +1091,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 			else if (j == 4) {
 				if (a == 35) {
 					if (!dungeon->rooms[room][a]) {
-						block = walls[wCount];
-						wCount++;
+						block = nonDoors[nCount];
+						nCount++;
 						std::string name = "rWall.png";
 						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
@@ -1105,8 +1107,8 @@ void PhysicsPlayground::newRoom(int room, int dTel) {
 			}else if(i == -3){
 				if (a == 58) {
 					if (!dungeon->rooms[room][a]) {
-						block = walls[wCount];
-						wCount++;
+						block = nonDoors[nCount];
+						nCount++;
 						std::string name = "bWall.png";
 						ECS::GetComponent<Sprite>(block).LoadSprite(name, 20, 20);
 						ECS::GetComponent<PhysicsBody>(block).SetPosition(b2Vec2(j * 20, 10 + (i * 20)));
