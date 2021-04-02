@@ -134,29 +134,71 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	{
 		makeJAnimFrame(std::vector<std::string>{
-			"aSprites/TileTopLeft/1.png", 
+			"aSprites/TileTopLeft/1.png",
 			"aSprites/TileTopLeft/2.png",
 			"aSprites/TileTopLeft/3.png",
-			"aSprites/TileTopLeft/4.png",
 			"aSprites/TileTopLeft/5.png",
 			"aSprites/TileTopLeft/6.png",
-			"aSprites/TileTopLeft/7.png"
-		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 80, 20, vec3(-50, 70, 1));
+			"aSprites/TileTopLeft/7.png",
+			"aSprites/TileTopLeft/8.png",
+			"aSprites/TileTopLeft/9.png",
+			"aSprites/TileTopLeft/10.png"
+		}, std::vector<int>{6, 3, 3, 6, 3, 3, 3, 3, 3, 3}, 80, 20, vec3(-50, 70, 1));
 		makeJAnimFrame(std::vector<std::string>{
 			"aSprites/TileTopRight/1.png",
 			"aSprites/TileTopRight/2.png",
 			"aSprites/TileTopRight/3.png",
-			"aSprites/TileTopRight/4.png",
 			"aSprites/TileTopRight/5.png",
 			"aSprites/TileTopRight/6.png",
-			"aSprites/TileTopRight/7.png"
-		}, std::vector<int>{6, 3, 6, 3, 6, 3, 6}, 80, 20, vec3(50, 70, 1));
-		makeFrame("wall2.png", 20, 60, vec3(-80, 50, 1));
-		makeFrame("wall3.png", 20, 60, vec3(80, 50, 1));
-		makeFrame("wall4.png", 20, 60, vec3(-80, -30, 1));
-		makeFrame("wall5.png", 20, 60, vec3(80, -30, 1));
-		makeFrame("wall6.png", 60, 20, vec3(-40, -50, 1));
-		makeFrame("wall6.png", 60, 20, vec3(40, -50, 1)); 
+			"aSprites/TileTopRight/7.png",
+			"aSprites/TileTopRight/8.png",
+			"aSprites/TileTopRight/9.png",
+			"aSprites/TileTopRight/10.png"
+		}, std::vector<int>{6, 3, 3, 6, 3, 3, 3, 3, 3, 3}, 80, 20, vec3(50, 70, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/Left Side/1.png",
+				"aSprites/Left Side/3.png",
+				"aSprites/Left Side/5.png",
+				"aSprites/Left Side/7.png",
+				"aSprites/Left Side/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 20, 40, vec3(-80, 40, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/RightSide/1.png",
+				"aSprites/RightSide/3.png",
+				"aSprites/RightSide/5.png",
+				"aSprites/RightSide/7.png",
+				"aSprites/RightSide/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 20, 40, vec3(80, 40, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/Left Side/1.png",
+				"aSprites/Left Side/3.png",
+				"aSprites/Left Side/5.png",
+				"aSprites/Left Side/7.png",
+				"aSprites/Left Side/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 20, 40, vec3(-80, -20, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/RightSide/1.png",
+				"aSprites/RightSide/3.png",
+				"aSprites/RightSide/5.png",
+				"aSprites/RightSide/7.png",
+				"aSprites/RightSide/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 20, 40, vec3(80, -20, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/Bottom Left/1.png",
+				"aSprites/Bottom Left/3.png",
+				"aSprites/Bottom Left/5.png",
+				"aSprites/Bottom Left/7.png",
+				"aSprites/Bottom Left/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 80, 20, vec3(-50, -50, 1));
+		makeJAnimFrame(std::vector<std::string>{
+			"aSprites/Bottom Right/1.png",
+				"aSprites/Bottom Right/3.png",
+				"aSprites/Bottom Right/5.png",
+				"aSprites/Bottom Right/7.png",
+				"aSprites/Bottom Right/10.png"
+		}, std::vector<int>{9, 6, 6, 9, 3}, 80, 20, vec3(50, -50, 1));
+		//makeFrame("wall6.png", 60, 20, vec3(-40, -50, 1));
+		//makeFrame("wall6.png", 60, 20, vec3(40, -50, 1)); 
 	}
 
 
