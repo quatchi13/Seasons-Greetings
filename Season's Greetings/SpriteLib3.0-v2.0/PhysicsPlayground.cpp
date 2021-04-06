@@ -312,30 +312,44 @@ void PhysicsPlayground::Update()
 						}
 
 						if (dungeon->mapCleared) {
+							std::string screenName;
 							if (dungeon->isTutorial) {
+								screenName = "Transition_1.png";
+								ECS::GetComponent<Sprite>(screen).LoadSprite(screenName, 195, 130);
+								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
+								player.SetVelocity(vec3(0, 0, 0));
 								player.SetPosition(b2Vec2(0, 15));
 								dungeon = &level1;
+								dungeon->currentRoom = 4;
 								newRoom(dungeon->currentRoom, 4);
 								ECS::GetComponent<PlayerHealth>(MainEntities::MainPlayer()).health = 10;
 								std::string fileN = "Health10.png";
 								ECS::GetComponent<Sprite>(healthBar).LoadSprite(fileN, 25, 25);
 								PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
-								std::cout << "level 1 Start";
+								stateOfGame = TRANSITION;
 							}
 							else if (dungeon->level == 1) {
-
+								screenName = "Transition_2.png";
+								ECS::GetComponent<Sprite>(screen).LoadSprite(screenName, 195, 130);
+								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
+								player.SetVelocity(vec3(0, 0, 0));
 								player.SetPosition(b2Vec2(0, 15));
 								dungeon = &level2;
 								newRoom(dungeon->currentRoom, 4);
-								std::cout << "level 2 Start";
+								stateOfGame = TRANSITION;
+
 							}
 							else if (dungeon->level == 2) {
-
+								screenName = "Transition_3.png";
+								ECS::GetComponent<Sprite>(screen).LoadSprite(screenName, 195, 130);
+								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
+								stateOfGame = TRANSITION;
+								player.SetVelocity(vec3(0, 0, 0));
 								player.SetPosition(b2Vec2(0, 15));
 								dungeon = &level3;
 								newRoom(dungeon->currentRoom, 4);
-								std::cout << "level 3 Start";
-							}else{
+							}
+							else {
 								std::string fName = "Win.png";
 								ECS::GetComponent<Sprite>(screen).LoadSprite(fName, 195, 130);
 								ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, -500));
@@ -641,12 +655,42 @@ void PhysicsPlayground::KeyboardDown()
 			stateOfGame = MENU;
 		}
 	}
+	else if (stateOfGame == TRANSITION) {
+		if (Input::GetKeyDown(Key::Enter))
+		{
+			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
+			for (int i = 0; i < 4; i++) {
+				if (ECS::GetComponent<Door>(doors[i]).activated) {
+					std::cout << "bruh";
+				}
+				ECS::GetComponent<Door>(doors[i]).activated = false;
+			}
+			stateOfGame = PLAY;
+		}
+	}
+	else if (stateOfGame == TSCREEN) {
+		if (Input::GetKeyDown(Key::RightArrow)) {
+			tSi++;
+			if (tSi < tutorialMess.size()) {
+				ECS::GetComponent<Sprite>(screen).LoadSprite(tutorialMess[tSi], 195, 130);
+			}
+			else {
+				ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
+				stateOfGame = PLAY;
+			}
+		}
+
+		if ((Input::GetKeyDown(Key::LeftArrow)) && tSi) {
+			tSi--;
+			ECS::GetComponent<Sprite>(screen).LoadSprite(tutorialMess[tSi], 195, 130);
+		}
+	}
 	else {
 		if (Input::GetKeyDown(Key::A)) {
 			dungeon = &tutorial;
-			ECS::GetComponent<PhysicsBody>(MainEntities::CameraFocus()).SetPosition(b2Vec2(0, 15));
 			newRoom(dungeon->currentRoom, 4);
-			stateOfGame = PLAY;
+			ECS::GetComponent<Sprite>(screen).LoadSprite(tutorialMess[tSi], 195, 130);
+			stateOfGame = TSCREEN;
 			PlaySound(TEXT("Game Music.wav"), NULL, SND_LOOP | SND_ASYNC);
 		}
 		
