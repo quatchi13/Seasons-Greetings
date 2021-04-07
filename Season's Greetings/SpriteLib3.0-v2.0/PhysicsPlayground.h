@@ -54,11 +54,16 @@ protected:
 	enum gameState {
 		STARTSCREEN,
 		MENU,
+		TRANSITION,
+		TSCREEN,
 		PLAY,
 		END
 	};
 
 	int stateOfGame = STARTSCREEN;
+
+	int tSi = 0;
+	std::vector<std::string>tutorialMess{ "1t.png", "2t.png", "3t.png", "4t.png", "5t.png", "6t.png", "7t.png", "8t.png" };
 
 
 	PhysicsPlaygroundListener listener;
@@ -99,5 +104,5 @@ protected:
 		{"aSprites/Spectre/Spectre1.png", "aSprites/Spectre/Spectre2.png", "aSprites/Spectre/Spectre.png", "aSprites/Spectre/Spectre4.png"}
 	};
 
-	
+
 };
